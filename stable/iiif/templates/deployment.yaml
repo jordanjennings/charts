@@ -15,17 +15,27 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccountName: {{ .Values.serviceAccount }}
+      {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:      
       {{- range .Values.imagePullSecrets }}
       - name: {{ . }}
       {{- end }}
       {{- end }}
+      {{- if .Values.vault.enabled }}
+      initContainers:
+      {{- include "vault_init_container" . | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_token_env_var" . | indent 10 }}
+          {{- end }}
           {{- range $key, $value := .Values.extraEnv }}
           - name: {{ $key }}
             value: {{ $value }}
