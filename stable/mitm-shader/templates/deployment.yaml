@@ -27,7 +27,7 @@ spec:
             - containerPort: {{ .Values.service.internalPort }}
           env:
             - name: IIIF_UPSTREAM
-              value: {{ .Values.iiifUpstream }}
+              value: http://{{ .Release.Name }}-iiif:{{ .Values.iiif.service.internalPort }}
           # TODO: Is it possible to add these values
           # livenessProbe:
           #   httpGet:
