@@ -42,6 +42,10 @@ spec:
           {{- if .Values.vault.enabled }}
           {{- include "vault_token_env_var" . | indent 10 }}
           {{- end }}
+          {{- if .Values.consul.enabled }}
+          - name: CONSUL_HTTP_ADDR
+            value: {{ .Values.consul.addr}}
+          {{- end }}
           {{- range $key, $value := .Values.extraEnv }}
           - name: {{ $key }}
             value: {{ $value }}

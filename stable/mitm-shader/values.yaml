@@ -6,6 +6,8 @@ image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/mitm-shader
   tag: chart-testing
   pullPolicy: Always
+imagePullSecrets:
+  - dpr-secret
 service:
   name: mitm-shader
   type: ClusterIP

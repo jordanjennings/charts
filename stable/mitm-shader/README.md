@@ -18,6 +18,7 @@ Parameter | Description | Default
 `image.repository` | kube-lego container image repository | `bossanova-cloud-container.jfrog.io/cloud-apps/mitm-shader`
 `image.tag` | kube-lego container image tag | `chart-testing`
 `image.pullPolicy` | kube-lego container image pull policy | `Always`
+`imagePullSecrets` | A list of Image pull secrets used to accesss private registries | `[dpr-secret]`
 `ingress.enabled` | Will this deployed service use an ingress | `false`
 `ingress.hosts`   | The hosts that this ingress resource will listen to for routing | `[]`
 `ingress.annotations`   | Annotations to be added to the ingress resource | `[]`

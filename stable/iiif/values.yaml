@@ -10,19 +10,6 @@ service:
   type: ClusterIP
   externalPort: 8182
   internalPort: 8182
-ingress:
-  enabled: false
-  # Used to create an Ingress record.
-  hosts:
-    - chart-example.local
-  annotations:
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  tls:
-    # Secrets must be manually created in the namespace.
-    # - secretName: chart-example-tls
-    #   hosts:
-    #     - chart-example.local
 cantaloupeProperties:
   custom: false
   name: cantaloupe.properties
@@ -59,13 +46,11 @@ resources: {}
       #   hosts:
       #     - chart-example.local
 vault:
-  enabled: True
+  enabled: true
   addr: http://10.0.2.2:8200
   auth:
     role: hitl-iiif
-    debug: 1
-  # authRole: default
+consul:
+  enabled: True
+  addr: http://10.0.2.2:8500
 serviceAccount: hitl-iiif
-extraEnv:
-  VAULT_ADDR: http://10.0.2.2:8200
-  CONSUL_HTTP_ADDR: http://10.0.2.2:8500
