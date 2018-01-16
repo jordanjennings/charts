@@ -34,8 +34,8 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
-mitm-shader:
-  iiifUpstream: http://hitl-iiif-iiif:8182
+# mitm-shader:
+  # iiifUpstream: http://hitl-iiif-iiif:8182
   # ingress:
   #   enabled: True
   #   annotations:

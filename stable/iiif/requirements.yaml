@@ -1,7 +1,4 @@
 dependencies:
-- name: mitm-shader
-  version: "0.1.0"
-  repository: "file://../mitm-shader"
 - name: vault-init-container
   version: "0.1.0"
   repository: "file://../vault-init-container"
