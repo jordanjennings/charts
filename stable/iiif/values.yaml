@@ -23,6 +23,18 @@ ingress:
     # - secretName: chart-example-tls
     #   hosts:
     #     - chart-example.local
+cantaloupeProperties:
+  custom: false
+  name: cantaloupe.properties
+  templateName: cantaloupe.properties.tpl
+  mountPath: /srv/iiif/conf
+  consulKeys:
+    applicationLogLevel: na/iiif/log-level
+    azureStorageResolverAccountName: na/iiif/storage-account
+    azureStorageResolverContainerName: na/iiif/container-name
+  vaultSecrets:
+    azureStorageResolverAccountKey: na/iiif/access-key
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

@@ -41,3 +41,12 @@ resources:
    memory: 128Mi
 # TODO: Is it possible to compute this value?
 iiifUpstream: http://hitl-iiif-iiif:8182
+iiif:
+  cantaloupeProperties:
+    custom: true
+    consulKeys:
+      applicationLogLevel: hitl/iiif/log-level
+      azureStorageResolverAccountName: hitl/iiif/storage-account
+      azureStorageResolverContainerName: hitl/iiif/container-name
+    vaultSecrets:
+      azureStorageResolverAccountKey: hitl/iiif/access-key
