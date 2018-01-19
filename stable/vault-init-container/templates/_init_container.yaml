@@ -1,6 +1,6 @@
 {{- define "vault_init_container" }}
 - name: {{ .Chart.Name }}-vault-auth
-  image: "{{ .Values.vault.auth.repository | default "bossanova-cloud-container.jfrog.io/cloud-apps/kubernetes-vault-auth-cli" }}:{{ .Values.vault.auth.tag | default "0.1.0" }}"
+  image: "{{ .Values.vault.auth.repository | default "bossanova-cloud-container.jfrog.io/cloud-apps/kubernetes-vault-auth-cli" }}:{{ .Values.vault.auth.tag | default "0.2.0" }}"
   imagePullPolicy: {{ default .Values.vault.auth.pullPolicy "Always" }}
   args:
     - create_secret
@@ -27,7 +27,3 @@
       value: {{ template "fullname" . }}-vault-token
     - name: VAULT_ROLE
       value: {{ .Values.vault.auth.role }}
-  # volumeMounts:
-  #   - mountPath: {{ .Values.etcSslCertsPath }}
-  #     name: ssl-certs
-{{- end }}
