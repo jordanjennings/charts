@@ -10,22 +10,17 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  {{- if .Values.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
-    {{- end }}
-    {{- if .Values.externalDns.enabled }}
-    {{- range $host := .Values.externalDns.hosts }}
-      external-dns.alpha.kubernetes.io/hostname: {{ $host | quote }}
-    {{- end }}
-    {{- end }}}
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+  {{- end }}
 spec:
   rules:
     {{- range $host := .Values.ingress.hosts }}
     - host: {{ $host }}
       http:
         paths:
-          - path: /
+          - path: {{ .Values.ingress.path }}
             backend:
               serviceName: {{ $serviceName }}
               servicePort: {{ $servicePort }}
