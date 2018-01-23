@@ -46,6 +46,10 @@ spec:
           - name: CONSUL_HTTP_ADDR
             value: {{ .Values.consul.addr}}
           {{- end }}
+          {{- if .Values.vault.enabled }}
+          - name: VAULT_ADDR
+            value: {{ .Values.vault.addr}}
+          {{- end }}
           {{- range $key, $value := .Values.extraEnv }}
           - name: {{ $key }}
             value: {{ $value }}
