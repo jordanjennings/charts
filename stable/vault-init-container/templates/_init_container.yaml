@@ -27,3 +27,4 @@
       value: {{ template "fullname" . }}-vault-token
     - name: VAULT_ROLE
       value: {{ .Values.vault.auth.role }}
+{{- end }}
