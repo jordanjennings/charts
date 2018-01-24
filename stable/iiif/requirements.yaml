@@ -1,4 +1,0 @@
-dependencies:
-- name: vault-init-container
-  version: "0.1.0"
-  repository: "file://../vault-init-container"
