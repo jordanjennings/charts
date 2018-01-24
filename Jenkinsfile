@@ -3,7 +3,6 @@
 caughtError = 0
 try {
     node {
-        properties[(disableConcurrentBuilds)]
         def changedFolders = []
         def chartFile = 'Chart.yml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
