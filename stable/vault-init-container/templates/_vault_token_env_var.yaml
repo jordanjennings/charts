@@ -1,0 +1,7 @@
+{{- define "vault_token_env_var" }}
+- name: VAULT_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: {{ template "fullname" . }}-vault-token
+      key: token
+{{- end }}

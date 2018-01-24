@@ -1,0 +1,30 @@
+{{- define "vault_init_container" }}
+- name: {{ .Chart.Name }}-vault-auth
+  image: "{{ .Values.vault.auth.repository | default "bossanova-cloud-container.jfrog.io/cloud-apps/kubernetes-vault-auth-cli" }}:{{ .Values.vault.auth.tag | default "0.2.0" }}"
+  imagePullPolicy: {{ default .Values.vault.auth.pullPolicy "Always" }}
+  args:
+    - create_secret
+  env:
+    {{- if .Values.vault.auth.debug }}
+    - name: DEBUG
+      value: "1"
+    {{- end }}
+    {{- if .Values.vault.auth.requestsCaBundle }}
+    - name: REQUESTS_CA_BUNDLE
+      value: {{ .Values.vault.auth.requestsCaBundle }}
+    {{- end }}
+    - name: VAULT_ADDR
+      value: {{ .Values.vault.addr }}
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: SERVICE_ACCOUNT_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.serviceAccountName
+    - name: K8S_VAULT_TOKEN_NAME
+      value: {{ template "fullname" . }}-vault-token
+    - name: VAULT_ROLE
+      value: {{ .Values.vault.auth.role }}
+{{- end }}

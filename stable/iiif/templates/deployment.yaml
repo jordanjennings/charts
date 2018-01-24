@@ -1,0 +1,79 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccountName: {{ .Values.serviceAccount }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:      
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.vault.enabled }}
+      initContainers:
+      {{- include "vault_init_container" . | indent 8 }}
+      {{- end }}
+      {{- if .Values.cantaloupeProperties.custom }}
+      volumes:
+        - name: {{ template "fullname" . }}
+          configMap:
+            name: {{ template "fullname" . }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_token_env_var" . | indent 10 }}
+          {{- end }}
+          {{- if .Values.consul.enabled }}
+          - name: CONSUL_HTTP_ADDR
+            value: {{ .Values.consul.addr}}
+          {{- end }}
+          {{- if .Values.vault.enabled }}
+          - name: VAULT_ADDR
+            value: {{ .Values.vault.addr}}
+          {{- end }}
+          {{- range $key, $value := .Values.extraEnv }}
+          - name: {{ $key }}
+            value: {{ $value }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+          {{- if .Values.cantaloupeProperties.custom }}
+          volumeMounts:
+            - name: {{ template "fullname" . }}
+              mountPath: {{ .Values.cantaloupeProperties.mountPath }}/{{ .Values.cantaloupeProperties.templateName }}
+              subPath: {{ .Values.cantaloupeProperties.templateName }}
+          {{- end }}
+          # TODO: Is there a way to get these into the pod? Potentially a sidecar?
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.service.internalPort }}
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.service.internalPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
