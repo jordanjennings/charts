@@ -22,7 +22,7 @@ try {
             stage('Gather changed Charts') {
                 changedFolders = sh(
                     returnStdout: true,
-                    script: "git show --name-only stable/ | grep $chartFile | awk -F/ '{print $1\"/\"$2}' | uniq"
+                    script: "git show -m --name-only | grep -e stable/.*/$chartFile | awk -F / '{print \$1 \"/\" \$2}'"
                 )
             }
 
