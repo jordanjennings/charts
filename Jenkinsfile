@@ -43,12 +43,13 @@ try {
                         def chartName = changedFolders[i].split('/')[1]
                         def chartPath = changedFolders[i]
 
-                        stage("Lint the Chart: $chartName") {
-                            sh(
-                                returnStdout: false,
-                                script: "helm lint $chartPath"
-                            )
-                        }
+                        // TODO: Add this back in once dependencies are added
+                        // stage("Lint the Chart: $chartName") {
+                        //     sh(
+                        //         returnStdout: false,
+                        //         script: "helm lint $chartPath"
+                        //     )
+                        // }
 
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
