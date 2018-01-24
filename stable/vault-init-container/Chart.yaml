@@ -3,3 +3,6 @@ description: Helpers for generating API objects for getting a inital Vault token
 name: vault-init-container
 version: 0.1.0
 appVersion: 0.1.0
+maintainers:
+  - name: Marc Sensenich (@marc-sensenich)
+    email: marc.sensenich@bossanova.com
