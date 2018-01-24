@@ -4,7 +4,7 @@
 replicaCount: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/mitm-shader
-  tag: chart-testing
+  tag: 0.1.0
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret

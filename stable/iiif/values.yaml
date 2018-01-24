@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/hitl-iiif
-  tag: testing-chart
+  tag: 0.1.0
   pullPolicy: IfNotPresent
 imagePullSecrets:
   - dpr-secret
