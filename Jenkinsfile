@@ -6,14 +6,8 @@ try {
         properties[(disableConcurrentBuilds)]
         def changedFolders = []
         def chartFile = 'Chart.yml'
-        def indexYaml = "index.yaml"
-        def indexYamlBackup = "${indexYaml}.bak"
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
-        def helmChartsRepo = 'helm-charts'
-        def artifactoryDownloadedIndexYaml = "artifactory-index.yaml"
-        def artifactoryBaseUrl = "https://bossanova.jfrog.io/bossanova"
-        def artifactoryChartsUrl = "${artifactoryBaseUrl}/${helmChartsRepo}"
-        def artifactoryIndexYamlLocation = "${helmChartsRepo}/${indexYaml}"
+        def helmChartsRepo = 'bossanova-helm-charts'
         def packagePath = ''
         def packageName = ''
 
@@ -71,39 +65,6 @@ try {
 
 
             if (env.BRANCH_NAME == 'master') {
-                stage("Download the current ${indexYaml}") {
-                    def indexYamlDownloadSpec = """{
-                      "files": [
-                        {
-                          "pattern": "${artifactoryIndexYamlLocation}",
-                          "target": "${artifactoryDownloadedIndexYaml}"
-                        }
-                      ]
-                    }"""
-                    def indexYamlFile = artifactoryServer.download(indexYamlDownloadSpec)
-                }
-
-                stage("Create backup of the current ${indexYaml}") {
-                    def indexYamlBackupUploadSpec = """{
-                      "files": [
-                        {
-                          "pattern": "${artifactoryDownloadedIndexYaml}",
-                          "target": "${helmChartsRepo}/${indexYamlBackup}",
-                          "flat": true
-                        }
-                      ]
-                    }"""
-
-                    artifactoryServer.upload(indexYamlBackupUploadSpec)        
-                }
-
-                stage("Merge ${indexYaml}") {
-                    sh(
-                        returnStdout: false,
-                        script: "helm repo index --merge ${artifactoryDownloadedIndexYaml} ."
-                    )
-                }
-
                 stage('Publish the Helm Charts') {
                     def helmChartUploadSpec = """{
                       "files": [
@@ -116,20 +77,6 @@ try {
                     }"""
 
                     artifactoryServer.upload(helmChartUploadSpec)
-                  }
-
-                  stage("Publish the updated ${indexYaml}") {
-                    def indexYamlUploadSpec = """{
-                      "files": [
-                        {
-                          "pattern": "${indexYaml}",
-                          "target": "${helmChartsRepo}/${indexYaml}",
-                          "flat": true
-                        }
-                      ]
-                    }"""
-
-                    artifactoryServer.upload(indexYamlUploadSpec)
                 }
             }
         }
