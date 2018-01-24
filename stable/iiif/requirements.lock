@@ -1,0 +1,6 @@
+dependencies:
+- name: vault-init-container
+  repository: https://bossanova.jfrog.io/bossanova/charts
+  version: 0.1.0
+digest: sha256:7b869f045abd3b58974846008c6adfb57e8a71293bea0d356ddf707613cdb512
+generated: 2018-01-24T18:30:55.840031454-05:00
