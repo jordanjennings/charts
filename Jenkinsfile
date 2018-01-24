@@ -19,10 +19,7 @@ try {
             }
 
             stage('Gather changed Charts') {
-                changedFolders = sh(
-                    returnStdout: true,
-                    script: "git show -m --name-only | grep -e stable/.*/$chartFile | awk -F / '{print \$1 \"/\" \$2}'"
-                )
+                changedFolders = sh returnStdout: true, script: 'git show -m --name-only | grep -e stable/.*/Chart.yaml | awk -F / \'{print $1 "/" $2}\''
             }
 
             stage('Set Helm home directory to the current workspace') {
