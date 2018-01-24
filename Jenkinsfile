@@ -19,10 +19,8 @@ try {
             }
 
             stage('Gather changed Charts') {
-                changedFolders = sh(
-                    returnStdout: true,
-                    script: "git show -m --name-only | grep -e stable/.*/$chartFile | awk -F / '{print \$1 \"/\" \$2}'"
-                )
+                // mimicking https://github.com/kubernetes/charts/blob/master/test/changed.sh to some degree
+                changedFolders = sh returnStdout: true, script: 'git diff --find-renames --name-only $(git merge-base origin/devel HEAD) stable/ | awk -F/ \'{print $1"/"$2}\' | uniq'
             }
 
             stage('Set Helm home directory to the current workspace') {
@@ -45,12 +43,13 @@ try {
                         def chartName = changedFolders[i].split('/')[1]
                         def chartPath = changedFolders[i]
 
-                        stage("Lint the Chart: $chartName") {
-                            sh(
-                                returnStdout: false,
-                                script: "helm lint $chartPath"
-                            )
-                        }
+                        // TODO: Add this back in once dependencies are added
+                        // stage("Lint the Chart: $chartName") {
+                        //     sh(
+                        //         returnStdout: false,
+                        //         script: "helm lint $chartPath"
+                        //     )
+                        // }
 
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
