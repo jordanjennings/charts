@@ -19,7 +19,8 @@ try {
             }
 
             stage('Gather changed Charts') {
-                changedFolders = sh returnStdout: true, script: 'git show -m --name-only | grep -e stable/.*/Chart.yaml | awk -F / \'{print $1 "/" $2}\''
+                // mimicking https://github.com/kubernetes/charts/blob/master/test/changed.sh to some degree
+                changedFolders = sh returnStdout: true, script: 'git diff --find-renames --name-only $(git merge-base origin/devel HEAD) stable/ | awk -F/ \'{print $1"/"$2}\' | uniq'
             }
 
             stage('Set Helm home directory to the current workspace') {
