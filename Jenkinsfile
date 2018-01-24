@@ -9,6 +9,8 @@ try {
         def helmChartsRepo = 'bossanova-helm-charts'
         def packagePath = ''
         def packageName = ''
+        def mergeBaseBranch = 'devel'
+        def mergeBaseCommit = 'HEAD'
 
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkins_build_jumpcloud',
         usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD']]) {
@@ -18,9 +20,18 @@ try {
                 }
             }
 
+            if (env.BRANCH_NAME == 'master') {
+                mergeBaseBranch = 'master'
+                mergeBaseCommit = 'HEAD~1'
+            }
+
+            if (env.BRANCH_NAME == 'devel') {
+                mergeBaseCommit = 'HEAD~1'
+            }
+
             stage('Gather changed Charts') {
                 // mimicking https://github.com/kubernetes/charts/blob/master/test/changed.sh to some degree
-                changedFolders = sh returnStdout: true, script: 'git diff --find-renames --name-only $(git merge-base origin/devel HEAD) stable/ | awk -F/ \'{print $1"/"$2}\' | uniq'
+                changedFolders = sh returnStdout: true, script: "git diff --find-renames --name-only \$(git merge-base origin/$mergeBaseBranch $mergeBaseCommit) stable/ | awk -F/ '{print \$1\"/\"\$2}' | uniq"
             }
 
             stage('Set Helm home directory to the current workspace') {
@@ -44,12 +55,12 @@ try {
                         def chartPath = changedFolders[i]
 
                         // TODO: Add this back in once dependencies are added
-                        stage("Lint the Chart: $chartName") {
-                            sh(
-                                returnStdout: false,
-                                script: "helm lint $chartPath"
-                            )
-                        }
+                        // stage("Lint the Chart: $chartName") {
+                        //     sh(
+                        //         returnStdout: false,
+                        //         script: "helm lint $chartPath"
+                        //     )
+                        // }
 
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
