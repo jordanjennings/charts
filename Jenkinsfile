@@ -3,7 +3,6 @@
 caughtError = 0
 try {
     node {
-        properties[(disableConcurrentBuilds)]
         def changedFolders = []
         def chartFile = 'Chart.yml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
@@ -22,7 +21,7 @@ try {
             stage('Gather changed Charts') {
                 changedFolders = sh(
                     returnStdout: true,
-                    script: "git show --name-only stable/ | grep $chartFile | awk -F/ '{print $1\"/\"$2}' | uniq"
+                    script: "git show -m --name-only | grep -e stable/.*/$chartFile | awk -F / '{print \$1 \"/\" \$2}'"
                 )
             }
 
@@ -39,26 +38,30 @@ try {
                       )
                 }
 
-                for (int i = 0; i < changedFolders.length; i++) {
-                    def chartName = changedFolders[i].split('/')[1]
-                    def chartPath = changedFolders[i]
+                if (!changedFolders.empty){
+                    changedFolders = changedFolders.split("\\r?\\n")
+                    
+                    for (int i = 0; i < changedFolders.length; i++) {
+                        def chartName = changedFolders[i].split('/')[1]
+                        def chartPath = changedFolders[i]
 
-                    stage("Lint the Chart: $chartName") {
-                        sh(
-                            returnStdout: false,
-                            script: "helm lint $chartPath"
-                        )
+                        stage("Lint the Chart: $chartName") {
+                            sh(
+                                returnStdout: false,
+                                script: "helm lint $chartPath"
+                            )
+                        }
+
+                        stage("Package the Chart: $chartName") {
+                            packagePath = sh(
+                                returnStdout: true,
+                                script: "helm package $chartPath"
+                            ).trim().split(':')[1]
+
+                            packageName = packagePath.split('/').last()
+                        }
+
                     }
-
-                    stage("Package the Chart: $chartName") {
-                        packagePath = sh(
-                            returnStdout: true,
-                            script: "helm package $chartPath"
-                        ).trim().split(':')[1]
-
-                        packageName = packagePath.split('/').last()
-                    }
-
                 }
             }
 
