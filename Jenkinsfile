@@ -44,12 +44,12 @@ try {
                         def chartPath = changedFolders[i]
 
                         // TODO: Add this back in once dependencies are added
-                        // stage("Lint the Chart: $chartName") {
-                        //     sh(
-                        //         returnStdout: false,
-                        //         script: "helm lint $chartPath"
-                        //     )
-                        // }
+                        stage("Lint the Chart: $chartName") {
+                            sh(
+                                returnStdout: false,
+                                script: "helm lint $chartPath"
+                            )
+                        }
 
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
