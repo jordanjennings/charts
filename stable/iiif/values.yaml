@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: bossanova-cloud-container.jfrog.io/cloud-apps/hitl-iiif
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/iiif
   tag: 0.1.0
   pullPolicy: IfNotPresent
 imagePullSecrets:
