@@ -1,0 +1,9 @@
+-   repo: local
+    hooks:
+      - id: helm-chart-lint
+        name: Lint Helm Charts
+        description: This will lint the Helm Charts modified in this commit compared to devel
+        entry: ./tools/lint-charts.sh
+        files: stable/.*
+        language: script
+        types: [file]
