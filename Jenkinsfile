@@ -12,6 +12,7 @@ try {
         def mergeBaseBranch = 'devel'
         def mergeBaseCommit = 'HEAD'
         def helmDockerImage = 'marcsensenich/k8s-helm:artifactory'
+        def helmChartsUrl = 'https://bossanova.jfrog.io/bossanova/charts'
 
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkins_build_jumpcloud',
         usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD']]) {
@@ -51,7 +52,7 @@ try {
                 stage("Add the Artifactory Helm Repository") {
                     sh(
                         returnStdout: false,
-                        script: "helm repo add artifactory $ARTIFACTORY_USER $ARTIFACTORY_PASSWORD"
+                        script: "helm repo add artifactory $helmChartsUrl $ARTIFACTORY_USER $ARTIFACTORY_PASSWORD"
                     )
                 }
 
