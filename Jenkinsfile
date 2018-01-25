@@ -11,6 +11,8 @@ try {
         def packageName = ''
         def mergeBaseBranch = 'devel'
         def mergeBaseCommit = 'HEAD'
+        def helmDockerImage = 'marcsensenich/k8s-helm:artifactory'
+        def helmChartsUrl = 'https://bossanova.jfrog.io/bossanova/charts'
 
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkins_build_jumpcloud',
         usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD']]) {
@@ -39,12 +41,26 @@ try {
                 env.HELM_HOME = "${env.WORKSPACE}/.helm}"
             }
 
-            docker.image('lachlanevenson/k8s-helm:v2.7.2').inside() {
+            docker.image("$helmDockerImage").inside() {
                 stage("Initialize Helm client") {
                     sh(
                         returnStdout: false,
                         script: 'helm init --client-only'
                       )
+                }
+
+                stage("Add the Artifactory Helm Repository") {
+                    sh(
+                        returnStdout: false,
+                        script: "helm repo add artifactory $helmChartsUrl $ARTIFACTORY_USER $ARTIFACTORY_PASSWORD"
+                    )
+                }
+
+                stage("Update the Helm Repositories") {
+                    sh(
+                        returnStdout: false,
+                        script: "helm repo update"
+                    )
                 }
 
                 if (!changedFolders.empty){
@@ -54,13 +70,19 @@ try {
                         def chartName = changedFolders[i].split('/')[1]
                         def chartPath = changedFolders[i]
 
-                        // TODO: Add this back in once dependencies are added
-                        // stage("Lint the Chart: $chartName") {
-                        //     sh(
-                        //         returnStdout: false,
-                        //         script: "helm lint $chartPath"
-                        //     )
-                        // }
+                        stage("Install Chart Depenedencies: $chartName") {
+                            sh(
+                                returnStdout: false,
+                                script: "helm dependency build $chartPath"
+                            )
+                        }
+
+                        stage("Lint the Chart: $chartName") {
+                            sh(
+                                returnStdout: false,
+                                script: "helm lint $chartPath"
+                            )
+                        }
 
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
