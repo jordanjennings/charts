@@ -2,5 +2,5 @@
 *       @marc-sensenich
 
 stable/vault-init-container/* @marc-sensenich
-stable/iiif                   @marc-sensenich @jhostney
+stable/iiif                   @marc-sensenich @jhosteny
 stable/mitm-shader            @marc-sensenich @jhosteny
