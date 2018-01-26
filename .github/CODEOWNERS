@@ -1,0 +1,6 @@
+# These owners will be the default owners for everything in the repo.
+*       @marc-sensenich
+
+stable/vault-init-container/* @marc-sensenich
+stable/iiif                   @marc-sensenich @jhostney
+stable/mitm-shader            @marc-sensenich @jhosteny
