@@ -13,6 +13,7 @@ try {
         def mergeBaseCommit = 'HEAD'
         def helmDockerImage = 'marcsensenich/k8s-helm:artifactory'
         def helmChartsUrl = 'https://bossanova.jfrog.io/bossanova/charts'
+        def packagedChartsDestination = 'packaged_charts'
 
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkins_build_jumpcloud',
         usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD']]) {
@@ -65,7 +66,11 @@ try {
 
                 if (!changedFolders.empty){
                     changedFolders = changedFolders.split("\\r?\\n")
-                    
+
+                    stage("Make the Chart destination directory") {
+                        sh "mkdir -p $packagedChartsDestination"
+                    }
+
                     for (int i = 0; i < changedFolders.length; i++) {
                         def chartName = changedFolders[i].split('/')[1]
                         def chartPath = changedFolders[i]
@@ -87,7 +92,7 @@ try {
                         stage("Package the Chart: $chartName") {
                             packagePath = sh(
                                 returnStdout: true,
-                                script: "helm package $chartPath"
+                                script: "helm package --destination $packagedChartsDestination $chartPath"
                             ).trim().split(':')[1]
 
                             packageName = packagePath.split('/').last()
@@ -104,7 +109,7 @@ try {
                     def helmChartUploadSpec = """{
                       "files": [
                         {
-                          "pattern": "*.tgz",
+                          "pattern": "$packagedChartsDestination/*.tgz",
                           "target": "${helmChartsRepo}/",
                           "flat": true
                         }
