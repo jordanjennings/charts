@@ -1,0 +1,4 @@
+dependencies:
+  - name: iiif
+    version: 0.1.2
+    repository: https://bossanova.jfrog.io/bossanova/charts

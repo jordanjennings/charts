@@ -42,8 +42,6 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
-# TODO: Is it possible to compute this value?
-iiifUpstream: http://hitl-iiif-iiif:8182
 iiif:
   cantaloupeProperties:
     custom: true
