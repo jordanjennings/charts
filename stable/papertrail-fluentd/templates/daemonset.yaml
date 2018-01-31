@@ -1,0 +1,92 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      name: {{ template "fullname" . }}
+    {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+    {{- end }}
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+    {{- if .Values.papertrail.register }}
+      initContainers:
+        - name: {{ template "fullname" . }}-register
+          image: "{{ .Values.registrationImage.name }}:{{ .Values.registrationImage.tag }}"
+          imagePullPolicy: {{ .Values.registrationImage.pullPolicy }}
+          env:
+            - name: FLUENTD_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: PAPERTRAIL_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname-secrets" . }}"
+                  key: papertrail-api-token
+            - name: FLUENT_PAPERTRAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname-secrets" . }}"
+                  key: papertrail-port
+          args:
+            - curl
+            - -X
+            - POST
+            - -H
+            - "X-Papertrail-Token: $(PAPERTRAIL_API_TOKEN)"
+            - https://papertrailapp.com/api/v1/systems.json
+            - -d
+            - 'system[name]=$(FLUENTD_HOSTNAME)&system[hostname]=173.233.5.200&destination_port=$(FLUENT_PAPERTRAIL_PORT)'
+    {{- end }}
+      containers:
+        - name: {{ template "fullname" . }}
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+          env:
+            - name: FLUENT_PAPERTRAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname-secrets" . }}"
+                  key: papertrail-host
+            - name: FLUENT_PAPERTRAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname-secrets" . }}"
+                  key: papertrail-port
+            - name: FLUENT_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+      serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /mnt/sda1/var/lib/docker/containers
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+  updateStrategy:
+    type: "{{ .Values.updateStrategy }}"

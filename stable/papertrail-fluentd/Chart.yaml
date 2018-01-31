@@ -1,0 +1,6 @@
+name: papertrail-fluentd
+version: 0.1.0
+description: Papertrail Log Collector
+keywords:
+  - monitoring
+  - logging
