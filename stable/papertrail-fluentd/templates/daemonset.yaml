@@ -47,7 +47,6 @@ spec:
               value: {{ template "name" . }}
           args:
             - curl
-            - -v
             - -X
             - POST
             - -H
