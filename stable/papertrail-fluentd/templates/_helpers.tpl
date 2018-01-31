@@ -21,3 +21,11 @@ A uniquely named secret, which includes the install time
 {{- define "fullname-secrets" -}}
 {{- printf "%s-secrets-%d" (include "fullname" .) .Release.Time.Seconds -}}
 {{- end -}}
+
+
+{{/*
+A uniquely named config, which includes the install time
+*/}}
+{{- define "fullname-configmaps" -}}
+{{- printf "%s-configmap-%d" (include "fullname" .) .Release.Time.Seconds -}}
+{{- end -}}

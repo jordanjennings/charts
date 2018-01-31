@@ -61,6 +61,8 @@ spec:
             - name: varlibdockercontainers
               mountPath: /var/lib/docker/containers
               readOnly: true
+            - name: fluentconfig
+              mountPath: {{ .Values.fluentdConfigPath }}
           env:
             - name: FLUENT_PAPERTRAIL_HOST
               valueFrom:
@@ -84,6 +86,9 @@ spec:
         - name: varlibdockercontainers
           hostPath:
             path: /mnt/sda1/var/lib/docker/containers
+        - name: fluentconfig
+          configMap:
+            name: "{{ template "fullname-configmaps" . }}"
     {{- if .Values.tolerations }}
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
