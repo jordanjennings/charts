@@ -47,7 +47,7 @@ spec:
             - "X-Papertrail-Token: $(PAPERTRAIL_API_TOKEN)"
             - https://papertrailapp.com/api/v1/systems.json
             - -d
-            - 'system[name]=$(FLUENTD_HOSTNAME)&system[hostname]=173.233.5.200&destination_port=$(FLUENT_PAPERTRAIL_PORT)'
+            - 'system[name]=$(FLUENTD_HOSTNAME)&system[hostname]=$(FLUENTD_HOSTNAME)&destination_port=$(FLUENT_PAPERTRAIL_PORT)'
     {{- end }}
       containers:
         - name: {{ template "fullname" . }}
