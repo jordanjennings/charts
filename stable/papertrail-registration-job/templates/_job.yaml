@@ -1,0 +1,77 @@
+{{- define "papertrail_registration_job" }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed  
+    "helm.sh/hook-weight": "4"
+type: Opaque
+data:
+  papertrail-port: {{ default "MISSING" .Values.papertrailRegistration.port | b64enc | quote }}
+  papertrail-host: {{ default "MISSING" .Values.papertrailRegistration.host | b64enc | quote }}
+  papertrail-api-token: {{ default "MISSING" .Values.papertrailRegistration.apiToken | b64enc | quote }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-{{ .Release.Time.Seconds }}"
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "5"
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name}}"
+      labels:
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name}}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ template "fullname" . }}-papertrail-register
+          image: "governmentpaas/curl-ssl:latest"
+          imagePullPolicy: Always
+          env:
+            - name: PAPERTRAIL_REGISTRATION_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: PAPERTRAIL_REGISTRATION_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+                  key: papertrail-api-token
+            - name: PAPERTRAIL_REGISTRATION_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+                  key: papertrail-port
+            - name: PAPERTRAIL_REGISTRATION_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: PAPERTRAIL_REGISTRATION_APP_LABEL
+              value: {{ template "name" . }}
+          args:
+            - curl
+            - -X
+            - POST
+            - -H
+            - "X-Papertrail-Token: $(PAPERTRAIL_REGISTRATION_API_TOKEN)"
+            - https://papertrailapp.com/api/v1/systems.json
+            - -d
+            - 'system[name]=$(PAPERTRAIL_REGISTRATION_HOSTNAME)-$(PAPERTRAIL_REGISTRATION_NAMESPACE)-$(PAPERTRAIL_REGISTRATION_APP_LABEL)&system[hostname]=$(PAPERTRAIL_REGISTRATION_HOSTNAME)-$(PAPERTRAIL_REGISTRATION_NAMESPACE)-$(PAPERTRAIL_REGISTRATION_APP_LABEL)&destination_port=$(PAPERTRAIL_REGISTRATION_PORT)'
+{{- end }}
