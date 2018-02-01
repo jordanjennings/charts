@@ -1,0 +1,6 @@
+dependencies:
+- name: papertrail-registration-job
+  repository: https://bossanova.jfrog.io/bossanova/charts
+  version: 0.1.0
+digest: sha256:a07ed28d7635ee5e3cef3eb3a1233f86ce98b37416960702621a7658c631f183
+generated: 2018-02-01T09:55:19.143561736-05:00
