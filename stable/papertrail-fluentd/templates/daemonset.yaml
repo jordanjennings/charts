@@ -19,42 +19,6 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
-    {{- if .Values.papertrail.register }}
-      initContainers:
-        - name: {{ template "fullname" . }}-register
-          image: "{{ .Values.registrationImage.name }}:{{ .Values.registrationImage.tag }}"
-          imagePullPolicy: {{ .Values.registrationImage.pullPolicy }}
-          env:
-            - name: FLUENTD_HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: PAPERTRAIL_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ template "fullname-secrets" . }}"
-                  key: papertrail-api-token
-            - name: FLUENT_PAPERTRAIL_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ template "fullname-secrets" . }}"
-                  key: papertrail-port
-            - name: FLUENTD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: FLUENTD_APP_LABEL
-              value: {{ template "name" . }}
-          args:
-            - curl
-            - -X
-            - POST
-            - -H
-            - "X-Papertrail-Token: $(PAPERTRAIL_API_TOKEN)"
-            - https://papertrailapp.com/api/v1/systems.json
-            - -d
-            - 'system[name]=$(FLUENTD_HOSTNAME)-$(FLUENTD_NAMESPACE)-$(FLUENTD_APP_LABEL)&system[hostname]=$(FLUENTD_HOSTNAME)-$(FLUENTD_NAMESPACE)-$(FLUENTD_APP_LABEL)&destination_port=$(FLUENT_PAPERTRAIL_PORT)'
-    {{- end }}
       containers:
         - name: {{ template "fullname" . }}
           image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"

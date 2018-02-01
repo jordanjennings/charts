@@ -4,11 +4,6 @@ image:
   tag: v0.12-alpine-papertrail
   pullPolicy: Always
 
-registrationImage:
-  name: governmentpaas/curl-ssl
-  tag: latest
-  pullPolicy: IfNotPresent
-
 ## Annotations to add to the DaemonSet's Pods
 podAnnotations: {}
 #  scheduler.alpha.kubernetes.io/tolerations: '[{"key": "example", "value": "foo"}]'
@@ -28,7 +23,11 @@ papertrail:
   apiToken: ""
   host: ""
   port: ""
-  register: false  
+
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
 
 resources:
   requests:
