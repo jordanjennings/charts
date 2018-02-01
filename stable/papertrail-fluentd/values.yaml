@@ -230,8 +230,8 @@ kubernetesLogConfig:
       type record_transformer
       enable_ruby true
       <record>
-        hostname #{ENV['FLUENT_HOSTNAME']}-${record["kubernetes"]["namespace_name"]}-${record["kubernetes"]["labels"]["app"] || record["kubernetes"]["labels"]["component"]}
-        program ${record["kubernetes"]["container_name"]}
+        hostname kubernetes-${record["kubernetes"]["namespace_name"]}-${record["kubernetes"]["labels"]["app"] || record["kubernetes"]["labels"]["component"]}
+        program ${record["kubernetes"]["container_name"]}-${record["kubernetes"]["host"]}
         severity info
         facility local0
         message ${record['log']}
