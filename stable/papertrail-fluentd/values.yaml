@@ -20,7 +20,6 @@ updateStrategy: OnDelete
 
 
 papertrail:
-  apiToken: ""
   host: ""
   port: ""
 
