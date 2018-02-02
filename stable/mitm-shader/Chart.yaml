@@ -1,7 +1,7 @@
 apiVersion: v1
 description: A Helm chart for deploying the MITM Shader for HITL
 name: mitm-shader
-version: 0.1.0
+version: 0.2.0
 maintainers:
   - name: Marc Sensenich (@marc-sensenich)
     email: marc.sensenich@bossanova.com

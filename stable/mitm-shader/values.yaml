@@ -51,3 +51,7 @@ iiif:
       azureStorageResolverContainerName: hitl/iiif/container-name
     vaultSecrets:
       azureStorageResolverAccountKey: hitl/iiif/access-key
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
