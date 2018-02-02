@@ -21,7 +21,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ .Release.Name }}-{{ .Release.Time.Seconds }}"
+  name: "{{ template "fullname" . }}-papertrail-register-{{ .Release.Time.Seconds }}"
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
