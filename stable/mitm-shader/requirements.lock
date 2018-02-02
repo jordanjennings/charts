@@ -2,5 +2,8 @@ dependencies:
 - name: iiif
   repository: https://bossanova.jfrog.io/bossanova/charts
   version: 0.1.2
-digest: sha256:ef9f7e2560027c2be4b9b47a23a0880973145182f2515dbec6216e1204dc77ba
-generated: 2018-01-26T07:39:00.387291977-05:00
+- name: papertrail-registration-job
+  repository: https://bossanova.jfrog.io/bossanova/charts
+  version: 0.2.0
+digest: sha256:bb7b819b588f6e662fffde1765b74b6fcd1b8b71b8f714f21e632bd94d378ff8
+generated: 2018-02-02T10:09:59.307976221-05:00
