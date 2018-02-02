@@ -2,5 +2,8 @@ dependencies:
 - name: vault-init-container
   repository: https://bossanova.jfrog.io/bossanova/charts
   version: 0.1.0
-digest: sha256:7b869f045abd3b58974846008c6adfb57e8a71293bea0d356ddf707613cdb512
-generated: 2018-01-24T18:30:55.840031454-05:00
+- name: papertrail-registration-job
+  repository: https://bossanova.jfrog.io/bossanova/charts
+  version: 0.2.0
+digest: sha256:c5f4dfa4f6f1097784cbdc0c31f4cb8d8a9b276f1b924bc9cc152025625edddb
+generated: 2018-02-01T16:25:48.943664497-05:00
