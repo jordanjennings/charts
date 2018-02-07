@@ -4,7 +4,7 @@ caughtError = 0
 try {
     node {
         def changedFolders = []
-        def chartFile = 'Chart.yml'
+        def chartFile = 'Chart.yaml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
         def helmChartsRepo = 'bossanova-helm-charts'
         def packagePath = ''
@@ -34,7 +34,7 @@ try {
 
             stage('Gather changed Charts') {
                 // mimicking https://github.com/kubernetes/charts/blob/master/test/changed.sh to some degree
-                changedFolders = sh returnStdout: true, script: "git diff --find-renames --name-only \$(git merge-base origin/$mergeBaseBranch $mergeBaseCommit) stable/ | awk -F/ '{print \$1\"/\"\$2}' | uniq"
+                changedFolders = sh returnStdout: true, script: "git diff --find-renames --name-only \$(git merge-base origin/$mergeBaseBranch $mergeBaseCommit) stable/ | grep $chartFile | awk -F/ '{print \$1\"/\"\$2}' | uniq"
             }
 
             stage('Set Helm home directory to the current workspace') {
