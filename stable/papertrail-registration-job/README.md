@@ -42,5 +42,15 @@ papertrailRegistration:
   port: "12345"
 ```
 
+or use empty values if you are going to populate them dynamically
+
+
+```yaml
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
+```
+
 3. Deploy your Chart as usual
 

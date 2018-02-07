@@ -1,0 +1,11 @@
+{{- if and .Values.papertrail.host .Values.papertrail.port -}}
+Fluentd agents are spinning up on each node in your cluster. After a few
+minutes, you should see logs available in Papertrail.
+{{- else -}}
+###########################################################
+####  ERROR: You did not set a papertrail.host and papertrail.port ####
+###########################################################
+
+This deployment will be incomplete until you provide your Papertrail host and port.
+
+{{- end }}

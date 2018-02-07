@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname-configmaps" . }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: {{ template "name" . }}
+data:
+  {{ .Values.kubernetesLogConfig.fileName }}: {{ .Values.kubernetesLogConfig.value | quote }}
+  {{ .Values.fluentLogConfig.fileName }}: {{ .Values.fluentLogConfig.value | quote }}
