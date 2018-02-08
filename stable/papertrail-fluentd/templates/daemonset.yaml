@@ -55,7 +55,7 @@ spec:
             path: /var/log
         - name: varlibdockercontainers
           hostPath:
-            path: /mnt/sda1/var/lib/docker/containers
+            path: /var/lib/docker/containers
         - name: fluentconfig
           configMap:
             name: "{{ template "fullname-configmaps" . }}"
