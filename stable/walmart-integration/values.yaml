@@ -37,3 +37,8 @@ vault:
 consul:
   enabled: True
   addr: http://10.0.2.2:8500  
+
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
