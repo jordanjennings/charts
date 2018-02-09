@@ -16,6 +16,12 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.prometheus.enabled }}
+        prometheus.io/scrape: {{ .Values.prometheus.scrape | quote }}
+        prometheus.io/probe: {{ .Values.prometheus.probe | quote }}
+        prometheus.io/path: {{ .Values.prometheus.path | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        {{- end }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:

@@ -42,3 +42,9 @@ papertrailRegistration:
   apiToken: ""
   host: ""
   port: ""
+
+prometheus:
+  enabled: true
+  scrape: true
+  probe: true
+  port: 8080
