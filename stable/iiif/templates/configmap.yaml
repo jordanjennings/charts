@@ -202,13 +202,13 @@ data:
     #----------------------------------------
 
     # !! Name of your Azure account.
-    AzureStorageResolver.account_name = {{ printf "{{ key \"%s\" }}" .Values.cantaloupeProperties.consulKeys.azureStorageResolverAccountName }}
+    AzureStorageResolver.account_name =
 
     # !! Key of your Azure account.
-    AzureStorageResolver.account_key = {{ printf "{{ with secret \"%s\" }}{{ .Data.value }}{{ end }}" .Values.cantaloupeProperties.vaultSecrets.azureStorageResolverAccountKey }}
+    AzureStorageResolver.account_key =
 
     # !! Name of the container containing images to be served.
-    AzureStorageResolver.container_name = {{ printf "{{ key \"%s\" }}" .Values.cantaloupeProperties.consulKeys.azureStorageResolverContainerName }}
+    AzureStorageResolver.container_name =
 
     # Tells AzureStorageResolver how to look up objects. Allowed values are
     # `BasicLookupStrategy` and `ScriptLookupStrategy`. ScriptLookupStrategy
