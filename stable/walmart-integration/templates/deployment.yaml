@@ -53,6 +53,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # TODO: This command will be removed once a full image is released
           command:
             - /usr/bin/dumb-init
             - --
@@ -60,8 +61,6 @@ spec:
           args:
             - -config
             - {{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}
-            # TODO: Use the actual runtime command
-            # - /opt/jdk/bin/java $JAVA_OPTIONS -jar ... 
             - env
           env:
           {{- if .Values.vault.enabled }}
