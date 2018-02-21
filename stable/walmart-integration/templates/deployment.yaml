@@ -33,7 +33,6 @@ spec:
       {{- include "vault_init_container" . | indent 8 }}
       {{- end }}
       # https://developers.redhat.com/blog/2017/11/22/dynamically-creating-java-keystores-openshift/
-      # TODO: Create an init container that gets the cert from WM and adds it to the keystore
         - name: walmart-cert-to-truststore
           image: {{ .Values.walmartTrustStoreConfiguration.image }}
           imagePullPolicy: {{ .Values.walmartTrustStoreConfiguration.pullPolicy }}
@@ -61,7 +60,8 @@ spec:
           args:
             - -config
             - {{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}
-            # TODO: This should accept either the command or use ENV for various Java options
+            # TODO: Use the actual runtime command
+            # - /opt/jdk/bin/java $JAVA_OPTIONS -jar ... 
             - env
           env:
           {{- if .Values.vault.enabled }}
@@ -75,6 +75,15 @@ spec:
           - name: VAULT_ADDR
             value: {{ .Values.vault.addr}}
           {{- end }}
+          - name: TRUSTSTORE_JKS
+            value: "{{ .Values.walmartTrustStoreConfiguration.truststorePath }}/{{ .Values.walmartTrustStoreConfiguration.trustStoreName }}"
+          - name: TRUSTSTORE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "walmart-integration.fullname" . }}
+                key: truststoreSecret
+          - name: JAVA_OPTIONS
+            value: -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
           volumeMounts:
             - mountPath: {{ .Values.envconsul.mountPath }}
               name: {{ template "walmart-integration.fullname" . }}
