@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
-  repository: bossanova-cloud-container.jfrog.io/base-images/python-base
-  tag: 0.2.0
+  repository: bossanova-cloud-container.jfrog.io/base-images/java-base
+  tag: 0.3.0
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
