@@ -1,3 +1,3 @@
-path "customer-services/walmart-realogram" {
+path "customer-services/walmart-integration" {
   capabilities = ["read"]
 }
