@@ -35,18 +35,19 @@ spec:
       # https://developers.redhat.com/blog/2017/11/22/dynamically-creating-java-keystores-openshift/
       # TODO: Create an init container that gets the cert from WM and adds it to the keystore
         - name: walmart-cert-to-truststore
-          image: TODO
+          image: {{ .Values.walmartTrustStoreConfiguration.image }}
+          imagePullPolicy: {{ .Values.walmartTrustStoreConfiguration.pullPolicy }}
           env:
             - name: truststore_jks
-              value: /var/run/secrets/java.io/keystores/truststore.jks
-            - name: password
+              value: "{{ .Values.walmartTrustStoreConfiguration.truststorePath }}/{{ .Values.walmartTrustStoreConfiguration.trustStoreName }}"
+            - name: truststore_password
               # TODO: Change this to a dynamic secret that is shared between the two
               value: changeit
           command: ['/bin/bash']
-          args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername api-ext.wal-mart.com -connect api-ext.wal-mart.com:443 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > /tmp/testing && csplit -z -f wm-crt- /tmp/testing "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $truststore_jks -storepass $password -alias walmart-external-api-$file; done']
+          args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername {{ .Values.walmartTrustStoreConfiguration.endpoint }} -connect {{ .Values.walmartTrustStoreConfiguration.endpoint }}:{{ .Values.walmartTrustStoreConfiguration.port }} 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > /tmp/testing && csplit -z -f wm-crt- /tmp/testing "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $truststore_jks -storepass $truststore_password -alias walmart-external-api-$file; done']
           volumeMounts:
-            - mountPath: /var/run/secrets/java.io/keystores
-              name: keystore-volume
+            - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -75,8 +76,8 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.envconsul.mountPath }}
               name: {{ template "walmart-integration.fullname" . }}
-            - mountPath: /var/run/secrets/java.io/keystores
-              name: keystore-volume
+            - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -97,6 +98,5 @@ spec:
         - name: {{ template "walmart-integration.fullname" . }}
           configMap:
             name: {{ template "walmart-integration.fullname" . }}
-        # Keystore initialization
-        - name: keystore-volume
+        - name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
           emptyDir: {}
