@@ -60,8 +60,10 @@ livenessProbe:
 walmartTrustStoreConfiguration:
   # Needs to be alpine based
   image: anapsix/alpine-java:8
+  pullPolicy: Always
   endpoint: "api-ext.qa.wal-mart.com"
   port: 443
   truststorePath: "/var/run/secrets/bossanova.cloud/keystores"
   trustStoreName: "walmart-truststore.jks"
   trustStoreMountName: bossanova-keystores
+  tmpDestination: /tmp/walmart-api-certs
