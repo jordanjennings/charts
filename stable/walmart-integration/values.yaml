@@ -1,4 +1,5 @@
 replicaCount: 1
+minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/base-images/java-base
   tag: 0.3.0
