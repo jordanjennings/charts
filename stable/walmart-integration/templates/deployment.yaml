@@ -53,15 +53,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          # TODO: This command will be removed once a full image is released
-          command:
-            - /usr/bin/dumb-init
-            - --
-            - envconsul
-          args:
-            - -config
-            - {{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}
-            - env
           env:
           {{- if .Values.vault.enabled }}
           {{- include "vault_token_env_var" . | indent 10 }}
