@@ -53,6 +53,13 @@ try {
                 stage("Add the Artifactory Helm Repository") {
                     sh(
                         returnStdout: false,
+                        script: "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/"
+                    )
+                }
+
+                stage("Add the Artifactory Helm Repository") {
+                    sh(
+                        returnStdout: false,
                         script: "helm repo add artifactory $helmChartsUrl $ARTIFACTORY_USER $ARTIFACTORY_PASSWORD"
                     )
                 }
