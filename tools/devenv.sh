@@ -5,7 +5,7 @@ IFS=$'\n\t'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Start Consul
-CONSUL_DOCKER_NAME=test_consul
+CONSUL_DOCKER_NAME=charts-consul
 CONSUL_PORT=8500
 export CONSUL_HTTP_ADDR="127.0.0.1:${CONSUL_PORT}"
 CONSUL_VERSION=0.9.2
@@ -27,7 +27,7 @@ while ! curl -sI "$CONSUL_SCHEME://$CONSUL_HTTP_ADDR/v1/status/leader" > /dev/nu
 done
 
 # Start Vault
-VAULT_DOCKER_NAME=test_vault
+VAULT_DOCKER_NAME=charts-vault
 VAULT_PORT=8200
 export VAULT_ADDR="http://127.0.0.1:${VAULT_PORT}"
 VAULT_VERSION=0.8.3

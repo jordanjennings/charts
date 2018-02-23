@@ -1,0 +1,70 @@
+replicaCount: 1
+minAvailable: 1
+image:
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/walmart-integration-service
+  tag: 0.0.3
+  pullPolicy: Always
+imagePullSecrets:
+  - dpr-secret
+serviceAccountName: walmart-integration
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+envconsul:
+  mountPath: /etc/envconsul
+  configFileName: envconsul-config.hcl
+  pristine: true
+  sanitize: true
+  upcase: true
+  secrets: []
+  prefixes: []
+  
+
+vault:
+  enabled: True
+  addr: http://10.0.2.2:8200
+  auth:
+    role: walmart-integration
+    debug: true
+
+consul:
+  enabled: True
+  addr: http://10.0.2.2:8500  
+
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
+
+prometheus:
+  enabled: true
+  scrape: true
+  probe: true
+  port: 9397
+
+livenessProbe:
+  port: 9397
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+walmartTrustStoreConfiguration:
+  # Needs to be alpine based
+  image: anapsix/alpine-java:8
+  pullPolicy: Always
+  endpoint: "api-ext.qa.wal-mart.com"
+  port: 443
+  truststorePath: "/var/run/secrets/bossanova.cloud/keystores"
+  trustStoreName: "walmart-truststore.jks"
+  trustStoreMountName: bossanova-keystores
+  tmpDestination: /tmp/walmart-api-certs

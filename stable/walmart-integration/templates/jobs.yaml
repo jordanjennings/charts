@@ -1,0 +1,2 @@
+# Register this application with Papertrail
+{{- include "papertrail_registration_job" . }}

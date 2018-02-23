@@ -1,0 +1,105 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "walmart-integration.fullname" . }}
+  labels:
+    app: {{ template "walmart-integration.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "walmart-integration.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.prometheus.enabled }}
+        prometheus.io/scrape: {{ .Values.prometheus.scrape | quote }}
+        prometheus.io/probe: {{ .Values.prometheus.probe | quote }}
+        prometheus.io/path: {{ .Values.prometheus.path | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- if .Values.vault.enabled }}
+      initContainers:
+      {{- include "vault_init_container" . | indent 8 }}
+      {{- end }}
+      # https://developers.redhat.com/blog/2017/11/22/dynamically-creating-java-keystores-openshift/
+        - name: walmart-cert-to-truststore
+          image: {{ .Values.walmartTrustStoreConfiguration.image }}
+          imagePullPolicy: {{ .Values.walmartTrustStoreConfiguration.pullPolicy }}
+          env:
+            - name: TRUSTSTORE_JKS
+              value: "{{ .Values.walmartTrustStoreConfiguration.truststorePath }}/{{ .Values.walmartTrustStoreConfiguration.trustStoreName }}"
+            - name: TRUSTSTORE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "walmart-integration.fullname" . }}
+                  key: truststoreSecret
+          command: ['/bin/bash']
+          args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername {{ .Values.walmartTrustStoreConfiguration.endpoint }} -connect {{ .Values.walmartTrustStoreConfiguration.endpoint }}:{{ .Values.walmartTrustStoreConfiguration.port }} 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > {{ .Values.walmartTrustStoreConfiguration.tmpDestination }} && csplit -z -f wm-crt- {{ .Values.walmartTrustStoreConfiguration.tmpDestination }} "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias walmart-external-api-$file; done']
+          volumeMounts:
+            - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_token_env_var" . | indent 10 }}
+          {{- end }}
+          {{- if .Values.consul.enabled }}
+          - name: CONSUL_HTTP_ADDR
+            value: {{ .Values.consul.addr}}
+          {{- end }}
+          {{- if .Values.vault.enabled }}
+          - name: VAULT_ADDR
+            value: {{ .Values.vault.addr}}
+          {{- end }}
+          - name: TRUSTSTORE_JKS
+            value: "{{ .Values.walmartTrustStoreConfiguration.truststorePath }}/{{ .Values.walmartTrustStoreConfiguration.trustStoreName }}"
+          - name: TRUSTSTORE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "walmart-integration.fullname" . }}
+                key: truststoreSecret
+          - name: JAVA_OPTIONS
+            value: -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
+          - name: ENVCONSUL_CONFIG
+            values: {{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}
+          volumeMounts:
+            - mountPath: {{ .Values.envconsul.mountPath }}
+              name: {{ template "walmart-integration.fullname" . }}
+            - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.livenessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: {{ template "walmart-integration.fullname" . }}
+          configMap:
+            name: {{ template "walmart-integration.fullname" . }}
+        - name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
+          emptyDir: {}
