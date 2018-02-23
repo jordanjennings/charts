@@ -75,7 +75,7 @@ spec:
           - name: JAVA_OPTIONS
             value: -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
           - name: ENVCONSUL_CONFIG
-            values: {{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}
+            value: "{{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}"
           volumeMounts:
             - mountPath: {{ .Values.envconsul.mountPath }}
               name: {{ template "walmart-integration.fullname" . }}
