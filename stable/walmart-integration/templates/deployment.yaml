@@ -44,8 +44,14 @@ spec:
                 secretKeyRef:
                   name: {{ template "walmart-integration.fullname" . }}
                   key: truststoreSecret
+            - name: WM_CERTS_TMP
+              value: {{ .Values.walmartTrustStoreConfiguration.tmpDestination }}
+            - name: WM_API_ENDPOINT
+              value: {{ .Values.walmartTrustStoreConfiguration.endpoint }}
+            - name: WM_API_PORT
+              value: {{ .Values.walmartTrustStoreConfiguration.port }}
           command: ['/bin/bash']
-          args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername {{ .Values.walmartTrustStoreConfiguration.endpoint }} -connect {{ .Values.walmartTrustStoreConfiguration.endpoint }}:{{ .Values.walmartTrustStoreConfiguration.port }} 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > {{ .Values.walmartTrustStoreConfiguration.tmpDestination }} && csplit -z -f wm-crt- {{ .Values.walmartTrustStoreConfiguration.tmpDestination }} "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias walmart-external-api-$file; done']
+          args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername $WM_API_ENDPOINT -connect $WM_API_ENDPOINT:$WM_API_PORT 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > $WM_CERTS_TMP && csplit -z -f wm-crt- $WM_CERTS_TMP "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias walmart-external-api-$file; done && keytool -importkeystore -srckeystore /opt/jdk/jre/lib/security/cacerts -destkeystore $TRUSTSTORE_JKS -srcstorepass changeit -deststorepass $TRUSTSTORE_SECRET']
           volumeMounts:
             - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
               name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
