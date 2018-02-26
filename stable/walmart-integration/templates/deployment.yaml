@@ -95,7 +95,7 @@ spec:
           {{- if .Values.prometheus.enabled }}        
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /metrics
               port: {{ .Values.prometheus.port }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
