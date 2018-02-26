@@ -49,7 +49,7 @@ spec:
             - name: WM_API_ENDPOINT
               value: {{ .Values.walmartTrustStoreConfiguration.endpoint }}
             - name: WM_API_PORT
-              value: {{ .Values.walmartTrustStoreConfiguration.port }}
+              value: {{ .Values.walmartTrustStoreConfiguration.port | quote }}
           command: ['/bin/bash']
           args: ['-c', 'apk add --no-cache openssl coreutils && echo |  openssl s_client -showcerts -servername $WM_API_ENDPOINT -connect $WM_API_ENDPOINT:$WM_API_PORT 2> /dev/null | sed -n "/^-----BEGIN CERT/,/^-----END CERT/p" > $WM_CERTS_TMP && csplit -z -f wm-crt- $WM_CERTS_TMP "/-----BEGIN CERTIFICATE-----/" "{*}" && for file in wm-crt-*; do keytool -v -import -noprompt -file $file -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias walmart-external-api-$file; done && keytool -importkeystore -srckeystore /opt/jdk/jre/lib/security/cacerts -destkeystore $TRUSTSTORE_JKS -srcstorepass changeit -deststorepass $TRUSTSTORE_SECRET']
           volumeMounts:
