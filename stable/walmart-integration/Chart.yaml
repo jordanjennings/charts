@@ -2,4 +2,4 @@ apiVersion: v1
 description: A Helm chart for the Walmart Integration service
 name: walmart-integration
 version: 0.0.6
-appVersion: 0.0.4
+appVersion: 0.0.5
