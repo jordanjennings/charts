@@ -31,6 +31,9 @@ spec:
             - name: varlibdockercontainers
               mountPath: /var/lib/docker/containers
               readOnly: true
+            - name: mntdockercontainers
+              mountPath: /mnt/docker/containers
+              readOnly: true
             - name: fluentconfig
               mountPath: {{ .Values.fluentdConfigPath }}
           env:
@@ -56,6 +59,9 @@ spec:
         - name: varlibdockercontainers
           hostPath:
             path: /var/lib/docker/containers
+        - name: mntdockercontainers
+          hostPath:
+            path: /mnt/docker/containers
         - name: fluentconfig
           configMap:
             name: "{{ template "fullname-configmaps" . }}"
