@@ -2,7 +2,7 @@ replicaCount: 1
 minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/walmart-integration-service
-  tag: 0.0.5
+  tag: 0.0.6
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
@@ -19,7 +19,6 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 envconsul:
-  mountPath: /etc/envconsul
   configFileName: envconsul-config.hcl
   pristine: true
   sanitize: true
@@ -68,3 +67,10 @@ walmartTrustStoreConfiguration:
   trustStoreName: "walmart-truststore.jks"
   trustStoreMountName: bossanova-keystores
   tmpDestination: /tmp/walmart-api-certs
+
+log4j:
+  logLevel: INFO
+  configFileName: log4j.properties
+  conversionPattern: "%-5p [%t]: %m%n"
+
+configMountPath: /etc/config

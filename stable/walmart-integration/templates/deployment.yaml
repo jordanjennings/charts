@@ -79,9 +79,9 @@ spec:
                 name: {{ template "walmart-integration.fullname" . }}
                 key: truststoreSecret
           - name: JAVA_OPTIONS
-            value: -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
+            value: -Dlog4j.configuration=file://{{ .Values.configMountPath }}/{{ .Values.log4j.configFileName }} -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
           - name: ENVCONSUL_CONFIG
-            value: "{{ .Values.envconsul.mountPath }}/{{ .Values.envconsul.configFileName }}"
+            value: "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
           {{- if .Values.prometheus.enabled }}
           - name: PROMETHEUS_PORT
             value: {{ .Values.prometheus.port | quote }}
@@ -93,7 +93,7 @@ spec:
               protocol: TCP
             {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.envconsul.mountPath }}
+            - mountPath: {{ .Values.configMountPath }}
               name: {{ template "walmart-integration.fullname" . }}
             - mountPath: {{ .Values.walmartTrustStoreConfiguration.truststorePath }}
               name: {{ .Values.walmartTrustStoreConfiguration.trustStoreMountName }}
