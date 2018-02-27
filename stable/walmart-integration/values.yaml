@@ -71,5 +71,6 @@ walmartTrustStoreConfiguration:
 log4j:
   logLevel: INFO
   configFileName: log4j.properties
+  conversionPattern: "%-5p [%t]: %m%n"
 
 configMountPath: /etc/config
