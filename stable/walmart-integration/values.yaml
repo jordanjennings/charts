@@ -19,7 +19,6 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 envconsul:
-  mountPath: /etc/envconsul
   configFileName: envconsul-config.hcl
   pristine: true
   sanitize: true
@@ -68,3 +67,9 @@ walmartTrustStoreConfiguration:
   trustStoreName: "walmart-truststore.jks"
   trustStoreMountName: bossanova-keystores
   tmpDestination: /tmp/walmart-api-certs
+
+log4j:
+  logLevel: INFO
+  configFileName: log4j.properties
+
+configMountPath: /etc/config
