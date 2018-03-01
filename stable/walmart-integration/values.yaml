@@ -68,9 +68,9 @@ walmartTrustStoreConfiguration:
   trustStoreMountName: bossanova-keystores
   tmpDestination: /tmp/walmart-api-certs
 
-log4j:
+logging:
   logLevel: INFO
-  configFileName: log4j.properties
+  configFileName: logging.properties
   conversionPattern: "%-5p [%t]: %m%n"
 
 configMountPath: /etc/config
