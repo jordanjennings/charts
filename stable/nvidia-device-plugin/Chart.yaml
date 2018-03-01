@@ -1,0 +1,9 @@
+apiVersion: v1
+description: A Helm chart for deploying the Nvidia Device Plugin for K8s
+name: nvidia-device-plugin
+version: 0.0.1
+appVersion: 1.8
+maintainers:
+  - name: Marc Sensenich (@marc-sensenich)
+    email: marc.sensenich@bossanova.com
+
