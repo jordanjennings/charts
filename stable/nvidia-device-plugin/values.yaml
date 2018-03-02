@@ -1,0 +1,4 @@
+image:
+  repo: nvidia/k8s-device-plugin
+  tag: 1.8
+  pullPolicy: Always
