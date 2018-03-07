@@ -1,0 +1,19 @@
+{{- template "common.configmap" (list . "section-break-detection.configmap") -}}
+{{- define "section-break-detection.configmap" -}}
+data:
+  {{ .Values.envconsul.configFileName }}: |-
+    pristine = {{ .Values.envconsul.pristine }}
+    sanitize = {{ .Values.envconsul.sanitize }}
+    upcase = {{ .Values.envconsul.upcase }}
+    {{- range $index, $secret := .Values.envconsul.secrets }}
+    secret {
+      path = {{ $secret.path | quote }}
+      no_prefix = {{ default "true" $secret.noPrefix }}
+    }
+    {{- end }}
+    {{- range $index, $prefix :=.Values.envconsul.prefixes }}
+    prefix {
+      path = {{ $prefix.path | quote }}
+    }
+    {{- end }}
+{{- end }}
