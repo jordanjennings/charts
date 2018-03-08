@@ -44,7 +44,7 @@ rbac:
   serviceAccountName: default
 
 fluentdConfigPath: /fluentd/etc
-fluentdOpt: "-v"
+fluentdOpt: ""
 fluentLogConfig:
   fileName: fluent.conf
   value: |-
