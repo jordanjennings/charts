@@ -13,6 +13,7 @@ spec:
       name: {{ template "fullname" . }}
     {{- if .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}        
 {{ toYaml .Values.podAnnotations | indent 8 }}
     {{- end }}
       labels:
@@ -51,6 +52,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: FLUENTD_OPT
+              value: "{{ .Values.fluentdOpt }}"
       serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
       volumes:
         - name: varlog
