@@ -232,7 +232,7 @@ kubernetesLogConfig:
       <record>
         hostname kubernetes-${record["kubernetes"]["namespace_name"]}-${record["kubernetes"].fetch("labels", Hash.new)["app"] || record["kubernetes"].fetch("labels", Hash.new)["component"] || record["kubernetes"].fetch("labels", Hash.new)["k8s-app"] || "undefined"}
         # Trim program/tag to stay withing syslog tag spec
-        program ${record["kubernetes"]["container_name"][0..31]}}
+        program ${record["kubernetes"]["container_name"][0..31]}
         severity info
         facility local0
         message ${record['log']}
