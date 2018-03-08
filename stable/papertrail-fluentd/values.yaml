@@ -44,7 +44,7 @@ rbac:
   serviceAccountName: default
 
 fluentdConfigPath: /fluentd/etc
-
+fluentdOpt: "-v"
 fluentLogConfig:
   fileName: fluent.conf
   value: |-
@@ -230,7 +230,7 @@ kubernetesLogConfig:
       type record_transformer
       enable_ruby true
       <record>
-        hostname kubernetes-${record["kubernetes"]["namespace_name"]}-${record["kubernetes"]["labels"]["app"] || record["kubernetes"]["labels"]["component"] || record["kubernetes"]["labels"]["k8s-app"] || "undefined" }
+        hostname kubernetes-${record["kubernetes"]["namespace_name"]}-${record["kubernetes"].fetch("labels", Hash.new)["app"] || record["kubernetes"].fetch("labels", Hash.new)["component"] || record["kubernetes"].fetch("labels", Hash.new)["k8s-app"] || "undefined"}
         program ${record["kubernetes"]["container_name"]}
         severity info
         facility local0
