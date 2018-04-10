@@ -12,6 +12,7 @@ nginx:
     type: ClusterIP
     externalPort: 80
     internalPort: 80
+  authProxyConfFile: auth-proxy.conf
   resources: {}
     # limits:
     #  cpu: 100m
@@ -72,3 +73,8 @@ consul:
   addr: http://10.0.2.2:8500  
 
 configMountPath: /etc/config
+
+upstreamService:
+  # my-svc.my-namespace.svc.cluster.local
+  host: 127.0.0.1
+  port: 80
