@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "auth-proxy.fullname" . }}
+  labels:
+    app: {{ template "auth-proxy.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "auth-proxy.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}    
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- if .Values.vault.enabled }}
+      initContainers:
+      {{- include "vault_init_container" . | indent 8 }}
+      {{- end }}
+      containers:
+        - name: "{{ .Chart.Name }}-nginx"
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.nginx.service.internalPort }}
+          volumeMounts:
+            - name: {{ template "auth-proxy.fullname" . }}
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          resources:
+{{ toYaml .Values.nginx.resources | indent 12 }}
+        - name: "{{ .Chart.Name }}-service"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_token_env_var" . | indent 10 }}
+          {{- end }}
+          {{- if .Values.consul.enabled }}
+          - name: CONSUL_HTTP_ADDR
+            value: {{ .Values.consul.addr}}
+          {{- end }}
+          {{- if .Values.vault.enabled }}
+          - name: VAULT_ADDR
+            value: {{ .Values.vault.addr}}
+          {{- end }}
+          - name: ENVCONSUL_CONFIG
+            value: "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
+          volumeMounts:
+            - mountPath: {{ .Values.configMountPath }}
+              name: {{ template "auth-proxy.fullname" . }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: {{ template "auth-proxy.fullname" . }}
+          configMap:
+            name: {{ template "auth-proxy.fullname" . }}
