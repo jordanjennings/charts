@@ -78,3 +78,5 @@ upstreamService:
   # my-svc.my-namespace.svc.cluster.local
   host: 127.0.0.1
   port: 80
+
+authProxyPort: 8000
