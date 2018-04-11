@@ -21,7 +21,7 @@ data:
         server {{ .Values.upstreamService.host }}:{{ .Values.upstreamService.port}};
     }
 
-    upstream auth-proxy {
+    upstream auth {
         server 127.0.0.1:{{ .Values.authProxyPort }};
     }
 
@@ -33,7 +33,7 @@ data:
             internal;
             rewrite ^(.*)$  /login break;
 
-            proxy_pass http://auth-proxy;
+            proxy_pass http://auth;
             proxy_set_header X-Original-URI $request_uri;
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -49,14 +49,16 @@ data:
             proxy_http_version 1.1;   
             proxy_pass http://backend;
             proxy_set_header Authorization "";
-            auth_request_set $auth_http_x_webauth_user $upstream_http_x_webauth_user;
-            proxy_set_header X-WEBAUTH-USER $auth_http_x_webauth_user;
+            auth_request_set $auth_http_x_remote_user $upstream_http_x_remote_user;
+            auth_request_set $auth_http_x_remote_groups $upstream_http_x_remote_groups;
+            proxy_set_header X-Remote-User $auth_http_x_remote_user;
+            proxy_set_header X-Remote-Groups $auth_http_x_remote_groups;
         }
 
         location = /authenticated {
             internal;
             proxy_http_version 1.1;
-            proxy_pass http://auth-proxy/authenticated;
+            proxy_pass http://auth/authenticated;
             proxy_pass_request_body     off;
             proxy_set_header Content-Length "";
         }
