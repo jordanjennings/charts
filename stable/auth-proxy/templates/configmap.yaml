@@ -18,7 +18,7 @@ data:
     {{- end }}
   {{ .Values.nginx.authProxyConfFile }}: |-
     upstream backend {
-        server {{ .Values.upstreamService.host }}:{{ .Values.upstreamService.port}};
+        server {{ .Values.nginx.upstreamService.host }}:{{ .Values.nginx.upstreamService.port}};
     }
 
     upstream auth {
