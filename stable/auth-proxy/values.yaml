@@ -1,0 +1,79 @@
+# Default values for auth-proxy.
+replicaCount: 1
+
+# Nginx sidecar configuration
+nginx:
+  image:
+    repository: nginx
+    tag: stable
+    pullPolicy: Always
+  service:
+    name: auth-proxy-nginx
+    type: ClusterIP
+    externalPort: 80
+    internalPort: 80
+  authProxyConfFile: auth-proxy.conf
+  resources: {}
+  upstreamService:
+    # my-svc.my-namespace.svc.cluster.local
+    host: 127.0.0.1
+    port: 80
+
+serviceAccountName: auth-proxy
+
+# Application image configuration
+image:
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/auth-proxy-service
+  tag: 0.0.1
+  pullPolicy: Always
+
+imagePullSecrets:
+  - dpr-secret
+
+# Ingress configuration
+ingress:
+  enabled: false
+  # Used to create an Ingress record.
+  hosts:
+    - chart-example.local
+  path: /
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  tls:
+    # Secrets must be manually created in the namespace.
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+
+resources: {}
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+# Consul and Vault configuration
+envconsul:
+  configFileName: envconsul-config.hcl
+  pristine: false
+  sanitize: true
+  upcase: true
+  secrets: []
+  prefixes: []
+
+vault:
+  enabled: True
+  addr: http://10.0.2.2:8200
+  auth:
+    role: auth-proxy
+    debug: true
+
+consul:
+  enabled: True
+  addr: http://10.0.2.2:8500  
+
+configMountPath: /etc/config
+
+authProxyPort: 8000
