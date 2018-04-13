@@ -6,9 +6,9 @@ nginx:
   image:
     repository: nginx
     tag: stable
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   service:
-    name: nginx
+    name: auth-proxy-nginx
     type: ClusterIP
     externalPort: 80
     internalPort: 80
@@ -16,7 +16,7 @@ nginx:
   resources: {}
   upstreamService:
     # my-svc.my-namespace.svc.cluster.local
-    host: elevated-puma-grafana.default.svc.cluster.local
+    host: 127.0.0.1
     port: 80
 
 serviceAccountName: auth-proxy
