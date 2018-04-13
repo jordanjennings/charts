@@ -39,6 +39,10 @@ spec:
         - name: "{{ .Chart.Name }}-service"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+          - "envconsul"
+          - "-config=$(ENVCONSUL_CONFIG)"
+          - "gunicorn auth_proxy.cli:app"
           env:
           {{- if .Values.vault.enabled }}
           {{- include "vault_token_env_var" . | indent 10 }}
