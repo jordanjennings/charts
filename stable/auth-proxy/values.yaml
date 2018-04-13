@@ -23,8 +23,8 @@ serviceAccountName: auth-proxy
 
 # Application image configuration
 image:
-  repository: bossanova-cloud-container.jfrog.io/cloud-apps/auth-proxy
-  tag: marc-testing
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/auth-proxy-service
+  tag: 0.0.1
   pullPolicy: Always
 
 imagePullSecrets:
