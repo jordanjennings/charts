@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $serviceName := include "auth-proxy.fullname" . -}}
-{{- $servicePort := .Values.service.externalPort -}}
+{{- $servicePort := .Values.nginx.service.externalPort -}}
 {{- $servicePath := .Values.ingress.path }}
 apiVersion: extensions/v1beta1
 kind: Ingress
