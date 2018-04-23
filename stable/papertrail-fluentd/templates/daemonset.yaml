@@ -52,6 +52,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            # Workaround for https://github.com/fluent/fluentd-kubernetes-daemonset/issues/90
+            - name: FLUENT_ELASTICSEARCH_USER
+              value: none
+            - name: FLUENT_ELASTICSEARCH_PASSWORD
+              value: none
             - name: FLUENTD_OPT
               value: "{{ .Values.fluentdOpt }}"
       serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
