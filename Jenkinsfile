@@ -128,6 +128,8 @@ try {
             }
         }
     }
+
+    currentBuild.result = "SUCCESS"
 }
 catch (caughtError) {
   currentBuild.result = "FAILURE"
@@ -140,6 +142,8 @@ finally {
       print "Cleaning up the workspace..."
       step([$class: 'WsCleanup'])
     }
+
+    sendBuildResultStatus(currentBuild.result, '#k8s')
 
     if (caughtError != 0) {
       throw caughtError
