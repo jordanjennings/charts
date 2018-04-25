@@ -48,6 +48,7 @@ prometheus:
   scrape: true
   probe: true
   port: 9397
+  path: /metrics
 
 livenessProbe:
   port: 9397
