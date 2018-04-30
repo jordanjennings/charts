@@ -2,7 +2,7 @@ replicaCount: 1
 minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/walmart-integration-service
-  tag: 0.1.0
+  tag: 1.0.0
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
