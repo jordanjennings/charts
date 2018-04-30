@@ -1,6 +1,6 @@
 caughtError = 0
 try {
-    node('basic') {
+    node('linux') {
         def changedFolders = []
         def chartFile = 'Chart.yaml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
