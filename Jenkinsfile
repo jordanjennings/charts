@@ -1,8 +1,6 @@
-// Find any changed charts
-//
 caughtError = 0
 try {
-    node {
+    node('linux') {
         def changedFolders = []
         def chartFile = 'Chart.yaml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
