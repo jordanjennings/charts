@@ -1,3 +1,3 @@
-path "customer-services/ingestor" {
+path "data-lake/ingestor" {
   capabilities = ["read"]
 }
