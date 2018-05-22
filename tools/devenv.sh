@@ -46,8 +46,8 @@ while ! curl -sI "$VAULT_ADDR/v1/sys/health" > /dev/null; do
 	fi
 done
 
-# Start Kubernetes
-if minikube status | grep -i stopped > /dev/null
+# Start Kubernetes if minikube status is Stopped
+if minikube status --format "{{.MinikubeStatus}}" | grep -i stopped > /dev/null
 then
 	minikube start
 fi
