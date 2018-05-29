@@ -50,13 +50,8 @@ spec:
           {{- end }}
           - name: LOGGING_LEVEL
             value: {{ .Values.logging.logLevel }}
-          - name: TRUSTSTORE_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ template "ingestor.fullname" . }}
-                key: truststoreSecret
           - name: JAVA_OPTIONS
-            value: -DLOGGING_LEVEL=$(LOGGING_LEVEL) -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
+            value: -DLOGGING_LEVEL=$(LOGGING_LEVEL) -Djava.net.preferIPv4Stack=true
           - name: ENVCONSUL_CONFIG
             value: "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
           {{- if .Values.prometheus.enabled }}
