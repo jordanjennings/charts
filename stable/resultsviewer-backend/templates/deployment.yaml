@@ -1,9 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "ingestor.fullname" . }}
+  name: {{ template "rv-backend.fullname" . }}
   labels:
-    app: {{ template "ingestor.name" . }}
+    app: {{ template "rv-backend.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "ingestor.name" . }}
+        app: {{ template "rv-backend.name" . }}
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
@@ -66,7 +66,7 @@ spec:
             {{- end }}
           volumeMounts:
             - mountPath: {{ .Values.configMountPath }}
-              name: {{ template "ingestor.fullname" . }}
+              name: {{ template "rv-backend.fullname" . }}
           # Since liveness currently depends on Prometheus
           {{- if .Values.prometheus.enabled }}        
           livenessProbe:
@@ -87,6 +87,6 @@ spec:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
       volumes:
-        - name: {{ template "ingestor.fullname" . }}
+        - name: {{ template "rv-backend.fullname" . }}
           configMap:
-            name: {{ template "ingestor.fullname" . }}
+            name: {{ template "rv-backend.fullname" . }}

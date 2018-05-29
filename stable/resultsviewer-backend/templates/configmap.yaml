@@ -1,5 +1,5 @@
-{{- template "common.configmap" (list . "ingestor.configmap") -}}
-{{- define "ingestor.configmap" -}}
+{{- template "common.configmap" (list . "rv-backend.configmap") -}}
+{{- define "rv-backend.configmap" -}}
 data:
   {{ .Values.envconsul.configFileName }}: |-
     pristine = {{ .Values.envconsul.pristine }}

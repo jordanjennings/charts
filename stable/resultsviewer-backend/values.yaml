@@ -6,7 +6,7 @@ image:
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
-serviceAccountName: ingestor
+serviceAccountName: resultsviewer-backend-service
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -31,7 +31,7 @@ vault:
   enabled: True
   addr: http://10.0.2.2:8200
   auth:
-    role: ingestor
+    role: resultsviewer-backend-service
     debug: true
 
 consul:

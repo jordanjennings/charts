@@ -1,9 +1,9 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ template "ingestor.fullname" . }}
+  name: {{ template "rv-backend.fullname" . }}
   labels:
-    app: {{ template "ingestor.name" . }}
+    app: {{ template "rv-backend.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -11,4 +11,4 @@ spec:
   minAvailable: {{ .Values.minAvailable }}
   selector:
     matchLabels:
-      app: {{ template "ingestor.name" . }}
+      app: {{ template "rv-backend.name" . }}
