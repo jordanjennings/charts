@@ -27,4 +27,10 @@
       value: {{ template "fullname" . }}-vault-token
     - name: VAULT_ROLE
       value: {{ .Values.vault.auth.role }}
+{{- if .Values.vault.caSecretName }}
+  volumeMounts:
+    - mountPath: {{ .Values.vault.caMountPath }}
+      name: {{ .Values.vault.caSecretName }}
+      readOnly: true
+{{- end }}
 {{- end }}
