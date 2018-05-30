@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+  name: "{{ template "name" . }}-pt-{{ .Release.Time.Seconds }}"
   labels:
     app: {{ template "name" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -21,7 +21,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ template "fullname" . }}-papertrail-register-{{ .Release.Time.Seconds }}"
+  name: "{{ template "name" . }}-pt-reg-{{ .Release.Time.Seconds }}"
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
@@ -41,7 +41,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ template "fullname" . }}-papertrail-register
+        - name: {{ template "name" . }}-pt-reg
           image: "governmentpaas/curl-ssl:latest"
           imagePullPolicy: Always
           env:
@@ -52,12 +52,12 @@ spec:
             - name: PAPERTRAIL_REGISTRATION_API_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+                  name: "{{ template "name" . }}-pt-{{ .Release.Time.Seconds }}"
                   key: papertrail-api-token
             - name: PAPERTRAIL_REGISTRATION_PORT
               valueFrom:
                 secretKeyRef:
-                  name: "{{ template "fullname" . }}-papertrail-{{ .Release.Time.Seconds }}"
+                  name: "{{ template "name" . }}-pt-{{ .Release.Time.Seconds }}"
                   key: papertrail-port
             - name: PAPERTRAIL_REGISTRATION_NAMESPACE
               valueFrom:
