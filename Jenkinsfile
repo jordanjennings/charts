@@ -1,6 +1,6 @@
 caughtError = 0
 try {
-    node('linux') {
+    node('basic') {
         def changedFolders = []
         def chartFile = 'Chart.yaml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
@@ -135,7 +135,7 @@ catch (caughtError) {
   print caughtError
 }
 finally {
-  node {
+  node('basic') {
     stage("Cleanup Workspace") {
       print "Cleaning up the workspace..."
       step([$class: 'WsCleanup'])
