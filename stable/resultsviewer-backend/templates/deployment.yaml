@@ -76,6 +76,11 @@ spec:
               name: {{ .Values.vault.caSecretName }}
               readOnly: true
             {{- end }}
+            {{- if .Values.consul.caSecretName }}
+            - mountPath: {{ .Values.consul.caMountPath }}
+              name: {{ .Values.consul.caSecretName }}
+              readOnly: true
+            {{- end }}
           # Since liveness currently depends on Prometheus
           {{- if .Values.prometheus.enabled }}        
           livenessProbe:
@@ -99,8 +104,13 @@ spec:
         - name: {{ template "resultsviewer-backend.fullname" . }}
           configMap:
             name: {{ template "resultsviewer-backend.fullname" . }}
-{{- if .Values.vault.caSecretName }}
+        {{- if .Values.vault.caSecretName }}
         - name: {{ .Values.vault.caSecretName }}
           secret:
             secretName: {{ .Values.vault.caSecretName }}
-{{- end }}
+        {{- end }}
+        {{- if .Values.consul.caSecretName }}
+        - name: {{ .Values.consul.caSecretName }}
+          secret:
+            secretName: {{ .Values.consul.caSecretName }}
+        {{- end }}
