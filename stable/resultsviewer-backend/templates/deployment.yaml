@@ -40,6 +40,10 @@ spec:
           {{- if .Values.vault.enabled }}
           {{- include "vault_token_env_var" . | indent 10 }}
           {{- end }}
+          {{- if .Values.vault.auth.requestsCaBundle }}
+          - name: REQUESTS_CA_BUNDLE
+            value: {{ .Values.vault.auth.requestsCaBundle }}
+          {{- end }}
           {{- if .Values.consul.enabled }}
           - name: CONSUL_HTTP_ADDR
             value: {{ .Values.consul.addr}}
@@ -67,6 +71,16 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.configMountPath }}
               name: {{ template "resultsviewer-backend.fullname" . }}
+            {{- if .Values.vault.caSecretName }}
+            - mountPath: {{ .Values.vault.caMountPath }}
+              name: {{ .Values.vault.caSecretName }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.consul.caSecretName }}
+            - mountPath: {{ .Values.consul.caMountPath }}
+              name: {{ .Values.consul.caSecretName }}
+              readOnly: true
+            {{- end }}
           # Since liveness currently depends on Prometheus
           {{- if .Values.prometheus.enabled }}        
           livenessProbe:
@@ -90,3 +104,13 @@ spec:
         - name: {{ template "resultsviewer-backend.fullname" . }}
           configMap:
             name: {{ template "resultsviewer-backend.fullname" . }}
+        {{- if .Values.vault.caSecretName }}
+        - name: {{ .Values.vault.caSecretName }}
+          secret:
+            secretName: {{ .Values.vault.caSecretName }}
+        {{- end }}
+        {{- if .Values.consul.caSecretName }}
+        - name: {{ .Values.consul.caSecretName }}
+          secret:
+            secretName: {{ .Values.consul.caSecretName }}
+        {{- end }}
