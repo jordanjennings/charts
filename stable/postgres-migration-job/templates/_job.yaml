@@ -1,0 +1,179 @@
+{{- define "postgres_migration_job" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "postgres-migration.name" $ }}-pgm-{{ $.Release.Time.Seconds }}
+  labels:
+    app: "{{ template "postgres-migration.name" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-12"
+data:
+  {{ .Values.envconsul.configFileName }}: |-
+    pristine = {{ .Values.envconsul.pristine }}
+    sanitize = {{ .Values.envconsul.sanitize }}
+    upcase = {{ .Values.envconsul.upcase }}
+    {{- if .Values.postgresMigrationEnvConsul }}
+    {{- if .Values.postgresMigrationEnvConsul.secrets }}
+    {{- range $index, $secret := .Values.postgresMigrationEnvConsul.secrets }}
+    secret {
+      path = {{ $secret.path | quote }}
+      no_prefix = {{ default "true" $secret.noPrefix }}
+      format = {{ default "{{'{{'}}key{{'}}'}}" $secret.format }}
+    }
+    {{- end }}
+    {{- end }}
+    {{- if .Values.postgresMigrationEnvConsul.prefixes }}
+    {{- range $index, $prefix := .Values.postgresMigrationEnvConsul.prefixes }}
+    prefix {
+      path = {{ $prefix.path | quote }}
+    }
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    consul {
+      ssl {
+        {{- if .Values.consul.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.consul.caMountPath .Values.consul.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+    vault {
+      ssl {
+        {{- if .Values.vault.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.vault.caMountPath .Values.vault.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "postgres-migration.name" $ }}-pgm-{{ $.Release.Time.Seconds }}
+  labels:
+    app: "{{ template "postgres-migration.name" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-11"
+type: Opaque
+data:
+  {{- range $varKey, $varVal := .Values.postgresMigrationEnv }}
+  {{ $varKey }}: {{ $varVal | b64enc | quote }}
+  {{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "postgres-migration.name" . }}-pgmj-{{ .Release.Time.Seconds }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-10"
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      restartPolicy: Never
+      {{- if .Values.vault.enabled }}
+      initContainers:
+      {{- include "vault_init_container" . | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "postgres-migration.name" . }}-pgmj
+          image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_token_env_var" . | indent 10 }}
+          {{- end }}
+          {{- if .Values.vault.auth.requestsCaBundle }}
+          - name: REQUESTS_CA_BUNDLE
+            value: {{ .Values.vault.auth.requestsCaBundle }}
+          {{- end }}
+          {{- if .Values.consul.enabled }}
+          - name: CONSUL_HTTP_ADDR
+            value: {{ .Values.consul.addr}}
+          {{- end }}
+          {{- if .Values.vault.enabled }}
+          - name: VAULT_ADDR
+            value: {{ .Values.vault.addr}}
+          {{- end }}
+          - name: ENVCONSUL_CONFIG
+            value: "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
+          # configure flyway via environment variables. see https://flywaydb.org/documentation/envvars
+          - name: POSTGRES_MIGRATION_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POSTGRES_MIGRATION_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POSTGRES_MIGRATION_APP_LABEL
+            value: {{ template "postgres-migration.name" . }}
+          {{- range $varKey, $varVal := .Values.postgresMigrationEnv }}
+          - name: {{ $varKey }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "postgres-migration.name" $ }}-pgm-{{ $.Release.Time.Seconds }}
+                key: {{ $varKey }}
+          {{- end }}
+          command: 
+            - {{ .Values.postgresMigrationCommand | default "envconsul" }}
+          {{- if .Values.postgresMigrationCommandArgs }}
+          args: {{ .Values.postgresMigrationCommandArgs }}
+          {{- else }}
+          args:
+            - "/opt/flyway/flyway"
+            - "migrate"
+          {{- end }}
+          volumeMounts:
+            - mountPath: {{ .Values.configMountPath }}
+              name: {{ template "postgres-migration.name" $ }}-pgm-config
+            {{- if .Values.vault.caSecretName }}
+            - mountPath: {{ .Values.vault.caMountPath }}
+              name: {{ .Values.vault.caSecretName }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.consul.caSecretName }}
+            - mountPath: {{ .Values.consul.caMountPath }}
+              name: {{ .Values.consul.caSecretName }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: {{ template "postgres-migration.name" $ }}-pgm-config
+          configMap:
+            name: {{ template "postgres-migration.name" $ }}-pgm-{{ $.Release.Time.Seconds }}
+        {{- if .Values.vault.caSecretName }}
+        - name: {{ .Values.vault.caSecretName }}
+          secret:
+            secretName: {{ .Values.vault.caSecretName }}
+        {{- end }}
+        {{- if .Values.consul.caSecretName }}
+        - name: {{ .Values.consul.caSecretName }}
+          secret:
+            secretName: {{ .Values.consul.caSecretName }}
+        {{- end }}
+{{- end }}
