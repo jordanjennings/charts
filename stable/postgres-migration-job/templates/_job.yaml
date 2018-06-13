@@ -23,7 +23,7 @@ data:
     secret {
       path = {{ $secret.path | quote }}
       no_prefix = {{ default "true" $secret.noPrefix }}
-      format = {{ default "{{'{{'}}key{{'}}'}}" $secret.format }}
+      format = {{ default "{{'{{'}}key{{'}}'}}" $secret.format | quote }}
     }
     {{- end }}
     {{- end }}
@@ -140,10 +140,17 @@ spec:
                 name: {{ template "postgres-migration.name" $ }}-pgm-{{ $.Release.Time.Seconds }}
                 key: {{ $varKey }}
           {{- end }}
+          {{- if .Values.postgresMigrationCommand }}
+          command:
+{{ toYaml .Values.postgresMigrationCommand | indent 12 }}
+          {{- else }}
           command: 
-            - {{ .Values.postgresMigrationCommand | default "envconsul" }}
+            - "envconsul"
+            - "-config=$(ENVCONSUL_CONFIG)"
+          {{- end }}
           {{- if .Values.postgresMigrationCommandArgs }}
-          args: {{ .Values.postgresMigrationCommandArgs }}
+          args:
+{{ toYaml .Values.postgresMigrationCommandArgs | indent 12 }}
           {{- else }}
           args:
             - "/opt/flyway/flyway"
