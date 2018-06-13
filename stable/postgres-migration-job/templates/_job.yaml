@@ -14,10 +14,10 @@ metadata:
     "helm.sh/hook-weight": "-12"
 data:
   {{ .Values.envconsul.configFileName }}: |-
-    pristine = {{ .Values.envconsul.pristine }}
-    sanitize = {{ .Values.envconsul.sanitize }}
-    upcase = {{ .Values.envconsul.upcase }}
     {{- if .Values.postgresMigrationEnvConsul }}
+    pristine = {{ default "false" .Values.postgresMigrationEnvConsul.pristine }}
+    sanitize = {{ default "true" .Values.postgresMigrationEnvConsul.sanitize }}
+    upcase = {{ default "true" .Values.postgresMigrationEnvConsul.upcase }}
     {{- if .Values.postgresMigrationEnvConsul.secrets }}
     {{- range $index, $secret := .Values.postgresMigrationEnvConsul.secrets }}
     secret {
@@ -145,15 +145,13 @@ spec:
 {{ toYaml .Values.postgresMigrationCommand | indent 12 }}
           {{- else }}
           command: 
-            - "envconsul"
-            - "-config=$(ENVCONSUL_CONFIG)"
+            - "/opt/flyway.sh"
           {{- end }}
           {{- if .Values.postgresMigrationCommandArgs }}
           args:
 {{ toYaml .Values.postgresMigrationCommandArgs | indent 12 }}
           {{- else }}
           args:
-            - "/opt/flyway/flyway"
             - "migrate"
           {{- end }}
           volumeMounts:
