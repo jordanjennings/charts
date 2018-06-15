@@ -44,8 +44,10 @@ papertrailRegistration:
   port: ""
 
 postgresMigrationCommand:
-  - "/opt/flyway.sh"
+  - "envconsul"
+  - "-config=$(ENVCONSUL_CONFIG)"
 postgresMigrationCommandArgs:
+  - "/opt/flyway.sh"
   - "migrate"
 
 prometheus:
