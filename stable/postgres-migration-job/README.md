@@ -23,7 +23,6 @@ Parameter                             | Description
 postgresMigrationEnv.FLYWAY_URL       | The JDBC url to use to connect to the database
 postgresMigrationEnv.FLYWAY_SCHEMAS   | Comma-separated case-sensitive list of schemas managed by Flyway.
 postgresMigrationEnv.FLYWAY_LOCATIONS | Comma-separated list of locations to scan recursively for migrations. The location type is determined by its prefix.
-- AND/OR -
 postgresMigrationEnv.FLYWAY_JAR_DIRS  | Comma-separated list of directories containing JDBC drivers and Java-based migrations
 
 ## Example Usage
@@ -39,9 +38,10 @@ postgresMigrationEnv.FLYWAY_JAR_DIRS  | Comma-separated list of directories cont
 
 ```yaml
 postgresMigrationEnv:
-  FLYWAY_URL: jdbc:postgresql://master.postgresql.service.consul:5432/app_db
+  FLYWAY_URL: jdbc:postgresql://master.postgresql.service.consul:5432/app_db?sslmode=require
   FLYWAY_SCHEMAS: appschema
-  FLYWAY_JAR_DIRS: /src/app-artifact
+  FLYWAY_JAR_DIRS: /srv/app-artifact
+  FLYWAY_LOCATIONS: classpath:db/migration[/component]
 ```
 
 3. Install the implementing Chart. A migration job will be created as part of bring up. The job will only run once.
