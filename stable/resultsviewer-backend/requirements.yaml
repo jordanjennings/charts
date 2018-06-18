@@ -8,3 +8,6 @@ dependencies:
   - name: common
     version: 0.0.1
     repository: https://kubernetes-charts-incubator.storage.googleapis.com/
+  - name: postgres-migration-job
+    version: 0.0.1
+    repository: https://bossanova.jfrog.io/bossanova/charts

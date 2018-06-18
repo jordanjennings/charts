@@ -1,8 +1,9 @@
 replicaCount: 1
 minAvailable: 1
 image:
-  repository: bossanova-cloud-container.jfrog.io/cloud-apps/resultsviewer-backend-service
-  tag: 0.0.16
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/
+  name: resultsviewer-backend-service
+  tag: 0.0.25
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
@@ -25,7 +26,6 @@ envconsul:
   upcase: true
   secrets: []
   prefixes: []
-  
 
 vault:
   enabled: True
@@ -42,6 +42,13 @@ papertrailRegistration:
   apiToken: ""
   host: ""
   port: ""
+
+postgresMigrationCommand:
+  - "envconsul"
+  - "-config=$(ENVCONSUL_CONFIG)"
+postgresMigrationCommandArgs:
+  - "/opt/flyway.sh"
+  - "migrate"
 
 prometheus:
   enabled: true
