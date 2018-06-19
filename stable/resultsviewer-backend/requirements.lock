@@ -10,6 +10,6 @@ dependencies:
   version: 0.0.1
 - name: postgres-migration-job
   repository: https://bossanova.jfrog.io/bossanova/charts
-  version: 0.0.1
-digest: sha256:8369e6222f3cae13421c70d6f9cb1b720a6fd00cdae89b0cb200813f12121b0d
-generated: 2018-06-18T13:54:26.299384924-04:00
+  version: 0.0.2
+digest: sha256:882a25ac45133bc449997a4500acf73c918ae3c1327a266b0e84efaabe1380d3
+generated: 2018-06-19T12:51:31.386386532-04:00
