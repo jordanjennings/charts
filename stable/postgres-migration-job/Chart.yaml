@@ -1,7 +1,7 @@
 apiVersion: v1
-description: A Helm chart partial to do application database migration using Helm hooks
+description: Chart partial to do application database migration using Helm hooks
 name: postgres-migration-job
-version: 0.0.1
+version: 0.0.2
 maintainers:
   - name: Nicholas Kiraly (@nkiraly)
     email: nicholas.kiraly@bossanova.com
