@@ -9,7 +9,7 @@ data:
     secret {
       path = {{ $secret.path | quote }}
       no_prefix = {{ default "true" $secret.noPrefix }}
-      format = {{ default "{{'{{'}}key{{'}}'}}" $secret.format | quote }}
+      format = {{ default "{{ key }}" $secret.format | quote }}
     }
     {{- end }}
     {{- range $index, $prefix := .Values.envconsul.prefixes }}
