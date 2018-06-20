@@ -3,7 +3,7 @@ minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/
   name: resultsviewer-backend-service
-  tag: 0.0.25
+  tag: 0.0.26
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
@@ -71,3 +71,11 @@ logging:
   conversionPattern: "%-5p [%t]: %m%n"
 
 configMountPath: /etc/config
+
+bossanovaTrustStoreConfiguration:
+  # Needs to be alpine based
+  image: anapsix/alpine-java:8
+  pullPolicy: Always
+  truststorePath: "/var/run/secrets/bossanova.cloud/keystores"
+  trustStoreName: "bossanova-truststore.jks"
+  trustStoreMountName: bossanova-keystores

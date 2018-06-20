@@ -32,6 +32,31 @@ spec:
       initContainers:
       {{- include "vault_init_container" . | indent 8 }}
       {{- end }}
+        # create trust store with Consul CA + default CA trust store to use for java run time
+        - name: bossanova-ca-to-truststore
+          image: {{ .Values.bossanovaTrustStoreConfiguration.image }}
+          imagePullPolicy: {{ .Values.bossanovaTrustStoreConfiguration.pullPolicy }}
+          env:
+            - name: TRUSTSTORE_JKS
+              value: "{{ .Values.bossanovaTrustStoreConfiguration.truststorePath }}/{{ .Values.bossanovaTrustStoreConfiguration.trustStoreName }}"
+            - name: TRUSTSTORE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "resultsviewer-backend.fullname" . }}
+                  key: truststoreSecret
+            - name: CONSUL_CA_BUNDLE
+              value: {{ (printf "%v/%v" .Values.consul.caMountPath .Values.consul.caBundleFilename) | quote }}
+          command:
+            - '/bin/bash'
+          args:
+            - '-c'
+            - 'apk add --no-cache openssl coreutils && keytool -v -import -noprompt -file $CONSUL_CA_BUNDLE -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias bossanova-ca-bundle && keytool -importkeystore -srckeystore /opt/jdk/jre/lib/security/cacerts -destkeystore $TRUSTSTORE_JKS -srcstorepass changeit -deststorepass $TRUSTSTORE_SECRET'
+          volumeMounts:
+            - mountPath: {{ .Values.bossanovaTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.bossanovaTrustStoreConfiguration.trustStoreMountName }}
+            - mountPath: {{ .Values.consul.caMountPath }}
+              name: {{ .Values.consul.caSecretName }}
+              readOnly: true
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}"
@@ -54,8 +79,15 @@ spec:
           {{- end }}
           - name: LOGGING_LEVEL
             value: {{ .Values.logging.logLevel }}
+          - name: TRUSTSTORE_JKS
+            value: "{{ .Values.bossanovaTrustStoreConfiguration.truststorePath }}/{{ .Values.bossanovaTrustStoreConfiguration.trustStoreName }}"
+          - name: TRUSTSTORE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "resultsviewer-backend.fullname" . }}
+                key: truststoreSecret
           - name: JAVA_OPTIONS
-            value: -DLOGGING_LEVEL=$(LOGGING_LEVEL) -Djava.net.preferIPv4Stack=true
+            value: -DLOGGING_LEVEL=$(LOGGING_LEVEL) -Djavax.net.ssl.trustStore=$(TRUSTSTORE_JKS) -Djavax.net.ssl.trustStorePassword=$(TRUSTSTORE_SECRET) -Djava.net.preferIPv4Stack=true
           - name: ENVCONSUL_CONFIG
             value: "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
           {{- if .Values.prometheus.enabled }}
@@ -71,6 +103,8 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.configMountPath }}
               name: {{ template "resultsviewer-backend.fullname" . }}
+            - mountPath: {{ .Values.bossanovaTrustStoreConfiguration.truststorePath }}
+              name: {{ .Values.bossanovaTrustStoreConfiguration.trustStoreMountName }}
             {{- if .Values.vault.caSecretName }}
             - mountPath: {{ .Values.vault.caMountPath }}
               name: {{ .Values.vault.caSecretName }}
@@ -104,6 +138,8 @@ spec:
         - name: {{ template "resultsviewer-backend.fullname" . }}
           configMap:
             name: {{ template "resultsviewer-backend.fullname" . }}
+        - name: {{ .Values.bossanovaTrustStoreConfiguration.trustStoreMountName }}
+          emptyDir: {}
         {{- if .Values.vault.caSecretName }}
         - name: {{ .Values.vault.caSecretName }}
           secret:
