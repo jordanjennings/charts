@@ -3,7 +3,7 @@ minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/
   name: resultsviewer-backend-service
-  tag: 0.0.28
+  tag: 0.0.29
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
