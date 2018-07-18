@@ -1,0 +1,79 @@
+replicaCount: 1
+minAvailable: 1
+image:
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/
+  name: cloud-oos-detection
+  tag: 0.0.8
+  pullPolicy: Always
+imagePullSecrets:
+  - dpr-secret
+serviceAccountName: oos-detection-service
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  #  nvidia.com/gpu: 1
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  #  nvidia.com/gpu: 1
+  
+envconsul:
+  configFileName: envconsul-config.hcl
+  pristine: false
+  sanitize: true
+  upcase: true
+  secrets: []
+  prefixes: []
+
+vault:
+  enabled: True
+  addr: http://10.0.2.2:8200
+  auth:
+    role: oos-detection
+    debug: true
+
+consul:
+  enabled: True
+  addr: http://10.0.2.2:8500  
+
+papertrailRegistration:
+  apiToken: ""
+  host: ""
+  port: ""
+
+prometheus:
+  enabled: true
+  scrape: true
+  probe: true
+  host: 0.0.0.0
+  port: 9397
+
+livenessProbe:
+  host: 0.0.0.0
+  port: 8080
+  healthinessEndpoint: /healthz
+  readinessEndpoint: /readyz
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+logging:
+  logLevel: INFO
+
+configMountPath: /etc/config
+
+containerEntryCommand:
+  - "envconsul"
+  - -config
+  - "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
+  - -exec
+
+containerEntryCommandArgs:
+  - "clients/label_cacher.py"
