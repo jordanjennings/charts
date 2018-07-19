@@ -12,3 +12,4 @@ spec:
   selector:
     matchLabels:
       app: {{ template "oos-detection.name" . }}
+      release: {{ .Release.Name }}
