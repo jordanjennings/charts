@@ -10,9 +10,9 @@ The following table lists the configurable parameters of the IIIF chart and thei
 
 Parameter | Description | Default
 --------- | ----------- | -------
-`image.repository` | kube-lego container image repository | `bossanova-cloud-container.jfrog.io/cloud-apps/mitm-shader`
-`image.tag` | kube-lego container image tag | `chart-testing`
-`image.pullPolicy` | kube-lego container image pull policy | `Always`
+`image.repository` | iiif container image repository | `bossanova-cloud-container.jfrog.io/cloud-apps/mitm-shader`
+`image.tag` | iiif container image tag | `chart-testing`
+`image.pullPolicy` | iiif container image pull policy | `Always`
 `imagePullSecrets` | A list of Image pull secrets used to accesss private registries | `[dpr-secret]`
 `replicaCount` | desired number of pods | `1`
 `resources` | MITM Shader resource requests and limits (YAML) |`{}`
