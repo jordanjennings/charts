@@ -1,6 +1,6 @@
 caughtError = 0
-try {
-    node('basic') {
+node('basic') {
+    try {
         def changedFolders = []
         def chartFile = 'Chart.yaml'
         def artifactoryServer = Artifactory.server 'bossanova-artifactory'     
@@ -102,12 +102,10 @@ try {
 
                             packageName = packagePath.split('/').last()
                         }
-
                     }
+
                 }
             }
-
-
 
             if (env.BRANCH_NAME == 'master') {
                 stage('Publish the Helm Charts') {
@@ -125,27 +123,24 @@ try {
                 }
             }
         }
+
+        currentBuild.result = "SUCCESS"
     }
-
-    currentBuild.result = "SUCCESS"
-}
-catch (caughtError) {
-  currentBuild.result = "FAILURE"
-  print "Problems with the build..."
-  print caughtError
-}
-finally {
-  node('basic') {
-    stage("Cleanup Workspace") {
-      print "Cleaning up the workspace..."
-      step([$class: 'WsCleanup'])
+    catch (caughtError) {
+      currentBuild.result = "FAILURE"
+      print "Problems with the build..."
+      print caughtError
     }
+    finally {
+        stage("Cleanup Workspace") {
+          print "Cleaning up the workspace..."
+          step([$class: 'WsCleanup'])
+        }
 
-    sendBuildResultStatus(currentBuild.result, '#k8s')
+        sendBuildResultStatus(currentBuild.result, '#k8s')
 
-    if (caughtError != 0) {
-      throw caughtError
+        if (caughtError != 0) {
+          throw caughtError
+        }
     }
-  }
 }
-
