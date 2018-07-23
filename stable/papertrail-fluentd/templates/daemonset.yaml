@@ -59,6 +59,9 @@ spec:
               value: none
             - name: FLUENTD_OPT
               value: "{{ .Values.fluentdOpt }}"
+            {{- if .Values.extraEnv }}
+{{ toYaml .Values.extraEnv | indent 12 }}
+            {{- end }}
       serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
       volumes:
         - name: varlog
