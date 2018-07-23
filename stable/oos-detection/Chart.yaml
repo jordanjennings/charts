@@ -2,4 +2,4 @@ apiVersion: v1
 description: Use AI models to detect Out Of Stock areas and associated labels
 name: oos-detection
 version: 0.0.1
-appVersion: 0.0.8
+appVersion: 0.1.0

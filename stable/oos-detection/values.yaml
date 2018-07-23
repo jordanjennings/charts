@@ -3,7 +3,7 @@ minAvailable: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/
   name: cloud-oos-detection
-  tag: 0.0.8
+  tag: 0.1.0
   pullPolicy: Always
 imagePullSecrets:
   - dpr-secret
@@ -76,4 +76,5 @@ containerEntryCommand:
   - -exec
 
 containerEntryCommandArgs:
-  - "clients/label_cacher.py"
+  - "oos_detection"
+  - "label_cacher"
