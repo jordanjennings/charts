@@ -40,7 +40,7 @@ resources: {}
       #   hosts:
       #     - chart-example.local
 vault:
-  enabled: true
+  enabled: false
   addr: http://10.0.2.2:8200
   auth:
     role: hitl-iiif
