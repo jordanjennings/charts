@@ -28,11 +28,14 @@ spec:
       initContainers:
       {{- include "vault_init_container" . | indent 8 }}
       {{- end }}
-      {{- if .Values.cantaloupeProperties.custom }}
       volumes:
+      {{- if .Values.cantaloupeProperties.custom }}
         - name: {{ template "fullname" . }}
           configMap:
             name: {{ template "fullname" . }}
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -56,11 +59,14 @@ spec:
         {{- end }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+          volumeMounts:          
           {{- if .Values.cantaloupeProperties.custom }}
-          volumeMounts:
             - name: {{ template "fullname" . }}
               mountPath: {{ .Values.cantaloupeProperties.mountPath }}/{{ .Values.cantaloupeProperties.templateName }}
               subPath: {{ .Values.cantaloupeProperties.templateName }}
+          {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 12 }}            
           {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
