@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/iiif
-  tag: 0.4.0
+  tag: 0.4.1
   pullPolicy: IfNotPresent
 imagePullSecrets:
   - dpr-secret
