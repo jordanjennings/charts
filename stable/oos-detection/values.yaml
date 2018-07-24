@@ -75,5 +75,4 @@ containerEntryCommand:
   - "-exec"
 
 containerEntryCommandArgs:
-  - "oos_detection"
-  - "label_cacher"
+  - "oos_detection label_cacher"
