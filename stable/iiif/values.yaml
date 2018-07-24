@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/iiif
-  tag: 0.2.0
+  tag: 0.4.2
   pullPolicy: IfNotPresent
 imagePullSecrets:
   - dpr-secret
@@ -12,16 +12,10 @@ service:
   internalPort: 8182
 cantaloupeProperties:
   custom: false
+  value: ""
   name: cantaloupe.properties
   templateName: cantaloupe.properties.tpl
   mountPath: /srv/iiif/conf
-  consulKeys:
-    applicationLogLevel: na/iiif/log-level
-    azureStorageResolverAccountName: na/iiif/storage-account
-    azureStorageResolverContainerName: na/iiif/container-name
-  vaultSecrets:
-    azureStorageResolverAccountKey: na/iiif/access-key
-
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -46,14 +40,14 @@ resources: {}
       #   hosts:
       #     - chart-example.local
 vault:
-  enabled: true
+  enabled: false
   addr: http://10.0.2.2:8200
   auth:
     role: hitl-iiif
 consul:
   enabled: True
   addr: http://10.0.2.2:8500
-serviceAccount: hitl-iiif
+serviceAccountName: hitl-iiif
 
 papertrailRegistration:
   apiToken: ""
