@@ -71,9 +71,8 @@ configMountPath: /etc/config
 
 containerEntryCommand:
   - "envconsul"
-  - -config
-  - "{{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}"
-  - -exec
+  - "-config=$(ENVCONSUL_CONFIG)"
+  - "-exec"
 
 containerEntryCommandArgs:
   - "oos_detection"
