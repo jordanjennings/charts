@@ -66,6 +66,31 @@ livenessProbe:
 
 logging:
   logLevel: INFO
+  configFileName: logging_config.ini
+  config: |-
+    [formatters]
+    keys=default
+
+    [formatter_default]
+    format=time:%(asctime)s level:%(levelname)s %(message)s
+    class=logging.Formatter
+
+    [handlers]
+    keys=console
+
+    [handler_console]
+    class=logging.StreamHandler
+    level=DEBUG
+    formatter=default
+    args=tuple()
+
+    [loggers]
+    keys=root
+
+    [logger_root]
+    level=DEBUG
+    formatter=default
+    handlers=console
 
 configMountPath: /etc/config
 

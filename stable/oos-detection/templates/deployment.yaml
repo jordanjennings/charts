@@ -58,6 +58,8 @@ spec:
             value: {{ .Values.livenessProbe.readinessEndpoint | quote }}
           - name: ENVCONSUL_CONFIG
             value: {{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}
+          - name: LOG_CONFIG
+            value: {{ .Values.configMountPath }}/{{ .Values.logging.configFileName }}
           {{- if .Values.prometheus.enabled }}
           - name: PROMETHEUS_HOST
             value: {{ .Values.prometheus.host | quote }}

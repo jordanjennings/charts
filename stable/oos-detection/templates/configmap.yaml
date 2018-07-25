@@ -31,4 +31,5 @@ data:
         {{- end }}
       }
     }
+  {{ .Values.logging.configFileName }}: {{ .Values.logging.config | quote }}
 {{- end }}
