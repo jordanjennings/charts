@@ -34,7 +34,11 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- if .Values.image.tag }}
           image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          {{- else -}}
+          image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Chart.AppVersion }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           {{- if .Values.vault.enabled }}
@@ -48,6 +52,10 @@ spec:
           - name: VAULT_ADDR
             value: {{ .Values.vault.addr}}
           {{- end }}
+          - name: APPLICATION_NAME
+            value: {{ .Release.Name | quote }}
+          - name: APPLICATION_VERSION
+            value: {{ .Chart.AppVersion | quote }}
           - name: HEALTHZ_HOST
             value: {{ .Values.livenessProbe.host | quote }}
           - name: HEALTHZ_PORT
