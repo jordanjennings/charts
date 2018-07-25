@@ -64,6 +64,8 @@ spec:
             value: {{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}
           - name: LOG_CONFIG
             value: {{ .Values.configMountPath }}/{{ .Values.logging.configFileName }}
+          - name: OOS_DETECTOR_MODEL_PATH
+            value: {{ .Values.modelPath }}
           {{- if .Values.prometheus.enabled }}
           - name: PROMETHEUS_HOST
             value: {{ .Values.prometheus.host | quote }}

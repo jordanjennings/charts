@@ -101,3 +101,5 @@ containerEntryCommand:
 
 containerEntryCommandArgs:
   - "oos_detection label_cacher"
+
+modelPath: /srv/cloud_oos_detection/oos_detector_model.pb
