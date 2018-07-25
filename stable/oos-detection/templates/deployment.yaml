@@ -34,11 +34,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- if .Values.image.tag }}
-          image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}"
-          {{- else -}}
-          image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Chart.AppVersion }}"
-          {{- end }}
+          image: {{ template "oos-detection.image-url" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           {{- if .Values.vault.enabled }}
