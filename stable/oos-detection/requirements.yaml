@@ -3,7 +3,7 @@ dependencies:
     version: 0.1.1
     repository: https://bossanova.jfrog.io/bossanova/charts
   - name: papertrail-registration-job
-    version: 0.2.2
+    version: 0.2.3
     repository: https://bossanova.jfrog.io/bossanova/charts
   - name: common
     version: 0.0.1

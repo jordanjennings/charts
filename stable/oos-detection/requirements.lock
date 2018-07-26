@@ -4,9 +4,9 @@ dependencies:
   version: 0.1.1
 - name: papertrail-registration-job
   repository: https://bossanova.jfrog.io/bossanova/charts
-  version: 0.2.2
+  version: 0.2.3
 - name: common
   repository: https://kubernetes-charts-incubator.storage.googleapis.com/
   version: 0.0.1
-digest: sha256:2916082e2e63cf4481c51be6acd9e395cfaba716d0b4ad2c76462382a74d30f3
-generated: 2018-07-18T16:00:33.74923514-04:00
+digest: sha256:30581d2ff123762fe566d67a989a55c5824694dc97f560bf38ab94bc817c3ef8
+generated: 2018-07-26T12:33:31.229722282-04:00
