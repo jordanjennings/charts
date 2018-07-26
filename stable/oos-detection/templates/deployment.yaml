@@ -3,10 +3,7 @@ kind: Deployment
 metadata:
   name: {{ template "oos-detection.fullname" . }}
   labels:
-    app: {{ template "oos-detection.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{ template "common.labels.standard" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
@@ -117,7 +114,9 @@ spec:
       volumes:
         - name: {{ template "oos-detection.fullname" . }}
           configMap:
-            name: {{ template "oos-detection.fullname" . }}
+            # configmap templated with common.configmap so match name convention in common.metadata template
+            # https://github.com/helm/charts/blob/master/incubator/common/templates/_configmap.yaml
+            name: {{ template "common.fullname" . }}
         {{- if .Values.vault.caSecretName }}
         - name: {{ .Values.vault.caSecretName }}
           secret:
