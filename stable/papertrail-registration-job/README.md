@@ -22,6 +22,7 @@ Parameter                       | Description
 papertrailRegistration.apiToken | An API token used to authenticate to Papertrail
 papertrailRegistration.host     | Your Papertrail Host
 papertrailRegistration.port     | Your Papertrail Port
+papertrailRegistration.appLabel | Papertrail application label to use - defaults to Chart Name
 
 
 ## Example Usage
