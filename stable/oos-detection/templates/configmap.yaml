@@ -1,0 +1,35 @@
+{{- template "common.configmap" (list . "oos-detection.configmap") -}}
+{{- define "oos-detection.configmap" -}}
+data:
+  {{ .Values.envconsul.configFileName }}: |-
+    pristine = {{ .Values.envconsul.pristine }}
+    sanitize = {{ .Values.envconsul.sanitize }}
+    upcase = {{ .Values.envconsul.upcase }}
+    {{- range $index, $secret := .Values.envconsul.secrets }}
+    secret {
+      path = {{ $secret.path | quote }}
+      no_prefix = {{ default "true" $secret.noPrefix }}
+      format = {{ default "{{ key }}" $secret.format | quote }}
+    }
+    {{- end }}
+    {{- range $index, $prefix := .Values.envconsul.prefixes }}
+    prefix {
+      path = {{ $prefix.path | quote }}
+    }
+    {{- end }}
+    consul {
+      ssl {
+        {{- if .Values.consul.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.consul.caMountPath .Values.consul.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+    vault {
+      ssl {
+        {{- if .Values.vault.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.vault.caMountPath .Values.vault.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+  {{ .Values.logging.configFileName }}: {{ .Values.logging.config | quote }}
+{{- end }}
