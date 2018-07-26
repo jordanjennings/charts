@@ -11,7 +11,7 @@ Add this Chart to your `requirements.yaml`
 ```yaml
 dependencies:
   - name: papertrail-registration-job
-    version: 0.1.0
+    version: 0.2.4
     repository: "https://bossanova.jfrog.io/bossanova/charts"
 ```
 
@@ -22,7 +22,6 @@ Parameter                       | Description
 papertrailRegistration.apiToken | An API token used to authenticate to Papertrail
 papertrailRegistration.host     | Your Papertrail Host
 papertrailRegistration.port     | Your Papertrail Port
-papertrailRegistration.appLabel | Papertrail application label to use - defaults to Chart Name
 
 
 ## Example Usage
