@@ -24,7 +24,7 @@
         fieldRef:
           fieldPath: spec.serviceAccountName
     - name: K8S_VAULT_TOKEN_NAME
-      value: {{ template "fullname" . }}-vault-token
+      value: {{ template "common.fullname" . }}-vault-token
     - name: VAULT_ROLE
       value: {{ .Values.vault.auth.role }}
 {{- if .Values.vault.caSecretName }}

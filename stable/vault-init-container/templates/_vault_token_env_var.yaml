@@ -2,6 +2,6 @@
 - name: VAULT_TOKEN
   valueFrom:
     secretKeyRef:
-      name: {{ template "fullname" . }}-vault-token
+      name: {{ template "common.fullname" . }}-vault-token
       key: token
 {{- end }}
