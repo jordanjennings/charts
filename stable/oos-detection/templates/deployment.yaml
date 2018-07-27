@@ -20,6 +20,10 @@ spec:
         prometheus.io/port: {{ .Values.prometheus.port | quote }}
         {{- end }}
     spec:
+      affinity:
+        {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 8 }}
+        {{- end }}
       serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:
       {{- range .Values.imagePullSecrets }}
