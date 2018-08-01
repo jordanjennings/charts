@@ -1,0 +1,5 @@
+# Before container starts, run job to migrate postgresql database to current version
+{{- include "postgres_migration_job" . }}
+---
+# Register this application with Papertrail
+{{- include "papertrail_registration_job" . }}
