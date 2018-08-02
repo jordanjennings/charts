@@ -1,0 +1,135 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "oos-delivery.fullname" . }}
+  labels:
+    {{ template "common.labels.standard" . }}
+spec:
+  schedule: {{ .Values.cronJob.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ template "oos-delivery.name" . }}
+            release: {{ .Release.Name }}
+          annotations:
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+            {{- if .Values.prometheus.enabled }}
+            prometheus.io/scrape: {{ .Values.prometheus.scrape | quote }}
+            prometheus.io/probe: {{ .Values.prometheus.probe | quote }}
+            prometheus.io/path: {{ .Values.prometheus.path | quote }}
+            prometheus.io/port: {{ .Values.prometheus.port | quote }}
+            {{- end }}
+        spec:
+          concurrencyPolicy: Forbid
+          restartPolicy: Never
+          affinity:
+            {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 12 }}
+            {{- end }}
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          imagePullSecrets:
+          {{- range .Values.imagePullSecrets }}
+          - name: {{ . }}
+          {{- end }}
+          initContainers:      
+          {{- if .Values.vault.enabled }}
+          {{- include "vault_init_container" . | indent 12 }}
+          {{- end }}
+          containers:
+            - name: {{ .Chart.Name }}
+              image: {{ template "oos-delivery.image-url" . }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              env:
+              {{- if .Values.vault.enabled }}
+              {{- include "vault_token_env_var" . | indent 14 }}
+              {{- end }}
+              {{- if .Values.consul.enabled }}
+              - name: CONSUL_HTTP_ADDR
+                value: {{ .Values.consul.addr}}
+              {{- end }}
+              {{- if .Values.vault.enabled }}
+              - name: VAULT_ADDR
+                value: {{ .Values.vault.addr}}
+              {{- end }}
+              - name: APPLICATION_NAME
+                value: {{ .Release.Name | quote }}
+              - name: APPLICATION_VERSION
+                value: {{ .Chart.AppVersion | quote }}
+              - name: HEALTHZ_HOST
+                value: {{ .Values.livenessProbe.host | quote }}
+              - name: HEALTHZ_PORT
+                value: {{ .Values.livenessProbe.port | quote }}
+              - name: HEALTHZ_HEALTHINESS_ENDPOINT
+                value: {{ .Values.livenessProbe.healthinessEndpoint | quote }}
+              - name: HEALTHZ_READINESS_ENDPOINT
+                value: {{ .Values.livenessProbe.readinessEndpoint | quote }}
+              - name: ENVCONSUL_CONFIG
+                value: {{ .Values.configMountPath }}/{{ .Values.envconsul.configFileName }}
+              - name: LOG_CONFIG
+                value: {{ .Values.configMountPath }}/{{ .Values.logging.configFileName }}
+              {{- if .Values.prometheus.enabled }}
+              - name: PROMETHEUS_HOST
+                value: {{ .Values.prometheus.host | quote }}
+              - name: PROMETHEUS_PORT
+                value: {{ .Values.prometheus.port | quote }}
+              {{- end }}
+              ports:
+                - containerPort: {{ .Values.livenessProbe.port }}
+                  name: liveness
+                  protocol: TCP
+                {{- if .Values.prometheus.enabled }}
+                - containerPort: {{ .Values.prometheus.port }}
+                  name: metrics
+                  protocol: TCP
+                {{- end }}
+              command:
+{{ toYaml .Values.containerEntryCommand | indent 16 }}
+              args:
+{{ toYaml .Values.containerEntryCommandArgs | indent 16 }}
+              volumeMounts:
+                - mountPath: {{ .Values.configMountPath }}
+                  name: {{ template "oos-delivery.fullname" . }}
+                {{- if .Values.vault.caSecretName }}
+                - mountPath: {{ .Values.vault.caMountPath }}
+                  name: {{ .Values.vault.caSecretName }}
+                  readOnly: true
+                {{- end }}
+                {{- if .Values.consul.caSecretName }}
+                - mountPath: {{ .Values.consul.caMountPath }}
+                  name: {{ .Values.consul.caSecretName }}
+                  readOnly: true
+                {{- end }}
+              livenessProbe:
+                httpGet:
+                  path: {{ .Values.livenessProbe.readinessEndpoint }}
+                  port: {{ .Values.livenessProbe.port }}
+                  scheme: HTTP
+                initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+                periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+                timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+                successThreshold: {{ .Values.livenessProbe.successThreshold }}
+                failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+              resources:
+{{ toYaml .Values.resources | indent 16 }}
+        {{- if .Values.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 12 }}
+        {{- end }}
+          volumes:
+            - name: {{ template "oos-delivery.fullname" . }}
+              configMap:
+                # configmap templated with common.configmap so match name convention in common.metadata template
+                # https://github.com/helm/charts/blob/master/incubator/common/templates/_configmap.yaml
+                name: {{ template "common.fullname" . }}
+            {{- if .Values.vault.caSecretName }}
+            - name: {{ .Values.vault.caSecretName }}
+              secret:
+                secretName: {{ .Values.vault.caSecretName }}
+            {{- end }}
+            {{- if .Values.consul.caSecretName }}
+            - name: {{ .Values.consul.caSecretName }}
+              secret:
+                secretName: {{ .Values.consul.caSecretName }}
+            {{- end }}
