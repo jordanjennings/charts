@@ -102,7 +102,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ template "postgres-migration.name" . }}-pgmj
-          image: "{{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          image: {{ template "postgres-migration.image-url" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           {{- if .Values.vault.enabled }}
