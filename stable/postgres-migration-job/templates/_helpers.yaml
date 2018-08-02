@@ -14,3 +14,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $pgmname := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $pgmname | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Calculate qualified image url based on AppVersion, or image.tag if specified
+*/}}
+{{- define "postgres-migration.image-url" -}}
+{{- $imageTag := default .Chart.AppVersion .Values.image.tag -}}
+{{- printf "%s%s:%s" .Values.image.repository .Values.image.name $imageTag -}}
+{{- end -}}
