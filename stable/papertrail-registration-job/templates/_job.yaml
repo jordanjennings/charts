@@ -67,6 +67,9 @@ spec:
               value: {{ template "papertrail-reg.name" . }}
             - name: PAPERTRAIL_SYSTEM_NAME
               value: kubernetes-$(PAPERTRAIL_REGISTRATION_NAMESPACE)-$(PAPERTRAIL_REGISTRATION_APP_LABEL)
+          # use PAPERTRAIL_SYSTEM_NAME for hostname because
+          # there is no guarantee the papertrail registration job
+          # will be scheduled on the same node application pods are scheduled on
           args:
             - curl
             - -X
@@ -75,5 +78,5 @@ spec:
             - "X-Papertrail-Token: $(PAPERTRAIL_REGISTRATION_API_TOKEN)"
             - https://papertrailapp.com/api/v1/systems.json
             - -d
-            - 'system[name]=$(PAPERTRAIL_SYSTEM_NAME)&system[hostname]=$(PAPERTRAIL_REGISTRATION_HOSTNAME)&destination_port=$(PAPERTRAIL_REGISTRATION_PORT)'
+            - 'system[name]=$(PAPERTRAIL_SYSTEM_NAME)&system[hostname]=$(PAPERTRAIL_SYSTEM_NAME)&destination_port=$(PAPERTRAIL_REGISTRATION_PORT)'
 {{- end }}
