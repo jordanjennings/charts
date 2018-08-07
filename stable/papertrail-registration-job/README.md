@@ -11,7 +11,7 @@ Add this Chart to your `requirements.yaml`
 ```yaml
 dependencies:
   - name: papertrail-registration-job
-    version: 0.2.4
+    version: 0.2.5
     repository: "https://bossanova.jfrog.io/bossanova/charts"
 ```
 
