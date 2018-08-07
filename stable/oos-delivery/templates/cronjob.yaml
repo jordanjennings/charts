@@ -6,6 +6,7 @@ metadata:
     {{ template "common.labels.standard" . }}
 spec:
   schedule: {{ .Values.cronJob.schedule | quote }}
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
@@ -22,7 +23,6 @@ spec:
             prometheus.io/port: {{ .Values.prometheus.port | quote }}
             {{- end }}
         spec:
-          concurrencyPolicy: Forbid
           restartPolicy: Never
           affinity:
             {{- if .Values.affinity }}

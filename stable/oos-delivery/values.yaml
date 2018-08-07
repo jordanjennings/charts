@@ -1,5 +1,5 @@
 cronJob:
-  schedule: "10 10 * * *"
+  schedule: "40 14 * * *"
 
 image:
   repository: bossanova-cloud-container.jfrog.io/cloud-apps/
