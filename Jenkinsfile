@@ -1,5 +1,5 @@
 caughtError = 0
-node('linux && gpu') {
+node('linux') {
     try {
         def changedFolders = []
         def chartFile = 'Chart.yaml'
