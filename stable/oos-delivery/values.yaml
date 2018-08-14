@@ -72,29 +72,35 @@ logging:
   logLevel: INFO
   configFileName: logging_config.ini
   config: |-
-    [formatters]
-    keys=default
-
-    [formatter_default]
-    format=time:%(asctime)s level:%(levelname)s %(message)s
-    class=logging.Formatter
-
-    [handlers]
-    keys=console
-
-    [handler_console]
-    class=logging.StreamHandler
-    level=DEBUG
-    formatter=default
-    args=tuple()
-
     [loggers]
-    keys=root
+    keys=custom,root
 
     [logger_root]
     level=DEBUG
-    formatter=default
-    handlers=console
+    handlers=custom
+    qualname=custom
+
+    [logger_custom]
+    level=DEBUG
+    handlers=custom
+    qualname=custom
+
+    [handlers]
+    keys=custom
+
+    [handler_custom]
+    class=StreamHandler
+    level=DEBUG
+    formatter=json
+    args=(sys.stdout,)
+
+    [formatters]
+    keys=json
+
+    [formatter_json]
+    format=%(asctime)%(levelname)%(name)%(message)s
+    datefmt=%Y-%m-%dT%H:%M:%S%z
+    class=pythonjsonlogger.jsonlogger.JsonFormatter
 
 configMountPath: /etc/config
 
