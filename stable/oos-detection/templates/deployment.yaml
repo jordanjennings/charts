@@ -73,6 +73,13 @@ spec:
           - name: PROMETHEUS_PORT
             value: {{ .Values.prometheus.port | quote }}
           {{- end }}
+          {{- range $varKey, $varVal := .Values.environmentSecrets }}
+          - name: {{ $varKey }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "oos-detection.name" $ }}-env
+                key: {{ $varKey }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.livenessProbe.port }}
               name: liveness

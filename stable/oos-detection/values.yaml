@@ -21,6 +21,9 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
   #  nvidia.com/gpu: 1
+
+# extra environment secrets
+environmentSecrets: {}
   
 envconsul:
   configFileName: envconsul-config.hcl
