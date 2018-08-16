@@ -2,4 +2,4 @@ apiVersion: v1
 description: Data Lake ResultsViewer Backend Services - Ingestor, API, ETL
 name: resultsviewer-backend
 version: 0.0.10
-appVersion: 0.1.1
+appVersion: 0.1.2
