@@ -109,9 +109,4 @@ containerEntryCommand:
   - "-config=$(ENVCONSUL_CONFIG)"
 
 containerEntryCommandArgs:
-  #- "oos_delivery"
-  # [T2A-177] nkiraly_pgsql_shim: postgresql authn shim until [T2A-128] oos-delivery honors MASTER and READ connection credential leases
-  - "/bin/bash"
-  - "/etc/config/pgsqlCredentialWrapper.sh"
-
-pgsqlCredentialWrapperFileName: pgsqlCredentialWrapper.sh
+  - "oos_delivery"

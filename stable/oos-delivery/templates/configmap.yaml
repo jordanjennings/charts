@@ -32,9 +32,4 @@ data:
       }
     }
   {{ .Values.logging.configFileName }}: {{ .Values.logging.config | quote }}
-  # [T2A-177] nkiraly_pgsql_shim: postgresql authn shim until [T2A-128] oos-delivery honors MASTER and READ connection credential leases
-  {{ .Values.pgsqlCredentialWrapperFileName }}: |-
-    export PGSQL_USER=$PGSQL_WRITE_USERNAME
-    export PGSQL_PASSWORD=$PGSQL_WRITE_PASSWORD
-    oos_delivery
 {{- end }}
