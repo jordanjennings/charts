@@ -109,4 +109,9 @@ containerEntryCommand:
   - "-config=$(ENVCONSUL_CONFIG)"
 
 containerEntryCommandArgs:
-  - "oos_delivery"
+  #- "oos_delivery"
+  # [T2A-186] nkiraly_credential_shim: service bus credential mapping shim until [T2A-187] has oos-delivery use 1 environment variable set for indexer API topic subscription
+  - "/bin/bash"
+  - "/etc/config/oos-delivery-env-map.sh"
+
+environmentMapperFileName: oos-delivery-env-map.sh
