@@ -49,6 +49,10 @@ spec:
           - name: VAULT_ADDR
             value: {{ .Values.vault.addr}}
           {{- end }}
+          {{- if .Values.pythonRequestsCaBundle }}
+          - name: REQUESTS_CA_BUNDLE
+            value: {{ .Values.pythonRequestsCaBundle }}
+          {{- end }}
           - name: APPLICATION_NAME
             value: {{ .Release.Name | quote }}
           - name: APPLICATION_VERSION

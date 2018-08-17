@@ -103,6 +103,12 @@ logging:
 
 configMountPath: /etc/config
 
+# specify system SSL CA bundle for python requests package to use
+# to allow for BNR Consul and Azure service HTTPS endpoint SSL verification concurrently
+pythonRequestsCaBundle: "/etc/ssl/certs/ca-certificates.crt"
+
+modelPath: /srv/cloud_oos_detection/oos_detector_model.pb
+
 containerEntryCommand:
   - "envconsul"
   - "-config=$(ENVCONSUL_CONFIG)"
@@ -110,5 +116,3 @@ containerEntryCommand:
 
 containerEntryCommandArgs:
   - "oos_detection label_cacher"
-
-modelPath: /srv/cloud_oos_detection/oos_detector_model.pb

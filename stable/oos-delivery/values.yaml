@@ -104,14 +104,18 @@ logging:
 
 configMountPath: /etc/config
 
+# specify system SSL CA bundle for python requests package to use
+# to allow for BNR Consul and Azure service HTTPS endpoint SSL verification concurrently
+pythonRequestsCaBundle: "/etc/ssl/certs/ca-certificates.crt"
+
 containerEntryCommand:
   - "envconsul"
   - "-config=$(ENVCONSUL_CONFIG)"
 
 containerEntryCommandArgs:
   #- "oos_delivery"
-  # [T2A-177] nkiraly_pgsql_shim: postgresql authn shim until [T2A-128] oos-delivery honors MASTER and READ connection credential leases
+  # [T2A-186] nkiraly_credential_shim: service bus credential mapping shim until [T2A-187] has oos-delivery use 1 environment variable set for indexer API topic subscription
   - "/bin/bash"
-  - "/etc/config/pgsqlCredentialWrapper.sh"
+  - "/etc/config/oos-delivery-env-map.sh"
 
-pgsqlCredentialWrapperFileName: pgsqlCredentialWrapper.sh
+environmentMapperFileName: oos-delivery-env-map.sh
