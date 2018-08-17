@@ -104,6 +104,10 @@ logging:
 
 configMountPath: /etc/config
 
+# specify system SSL CA bundle for python requests package to use
+# to allow for BNR Consul and Azure service HTTPS endpoint SSL verification concurrently
+pythonRequestsCaBundle: "/etc/ssl/certs/ca-certificates.crt"
+
 containerEntryCommand:
   - "envconsul"
   - "-config=$(ENVCONSUL_CONFIG)"
