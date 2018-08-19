@@ -1,12 +1,12 @@
 dependencies:
 - name: vault-init-container
   repository: https://bossanova.jfrog.io/bossanova/charts
-  version: 0.1.0
+  version: 0.1.2
 - name: papertrail-registration-job
   repository: https://bossanova.jfrog.io/bossanova/charts
-  version: 0.2.1
+  version: 0.2.5
 - name: common
   repository: https://kubernetes-charts-incubator.storage.googleapis.com/
-  version: 0.0.1
-digest: sha256:de2c9fbb2704f718fb036d2483615dbbf150a7fd92b91242bf0b897812e45e95
-generated: 2018-02-23T15:08:33.729157114-05:00
+  version: 0.0.3
+digest: sha256:eb002453bc145d0ceff8f24a33ff01881e858e3d73ba17693d204e3d9fa220e2
+generated: 2018-08-19T07:48:12.606472731-04:00

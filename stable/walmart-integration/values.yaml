@@ -68,6 +68,7 @@ walmartTrustStoreConfiguration:
   trustStoreName: "walmart-truststore.jks"
   trustStoreMountName: bossanova-keystores
   tmpDestination: /tmp/walmart-api-certs
+  scriptName: truststore-gen.sh
 
 logging:
   logLevel: INFO
