@@ -16,4 +16,6 @@ data:
       path = {{ $prefix.path | quote }}
     }
     {{- end }}
+  {{ .Values.walmartTrustStoreConfiguration.scriptName }}: |
+{{ .Files.Get "init/truststore-gen.sh" | indent 4 }}
 {{- end }}
