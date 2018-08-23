@@ -73,15 +73,10 @@ logging:
   configFileName: logging_config.ini
   config: |-
     [loggers]
-    keys=custom,root
+    keys=root
 
     [logger_root]
-    level=DEBUG
-    handlers=custom
-    qualname=custom
-
-    [logger_custom]
-    level=DEBUG
+    level=ERROR
     handlers=custom
     qualname=custom
 
