@@ -10,4 +10,4 @@ for file in wm-crt-*; do
     keytool -import -noprompt -file $file -keystore $TRUSTSTORE_JKS -storepass $TRUSTSTORE_SECRET -alias walmart-external-api-$file
 done
 
-keytool -importkeystore -srckeystore /opt/jdk/jre/lib/security/cacerts -destkeystore $TRUSTSTORE_JKS -srcstorepass changeit -deststorepass $TRUSTSTORE_SECRET
+keytool -importkeystore -noprompt -srckeystore /opt/jdk/jre/lib/security/cacerts -destkeystore $TRUSTSTORE_JKS -srcstorepass changeit -deststorepass $TRUSTSTORE_SECRET
