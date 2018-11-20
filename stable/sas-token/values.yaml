@@ -1,0 +1,96 @@
+# Values with "sas-token-placeholder" or 10.0.0.0 must be overridden at deployment time
+
+replicaCount: 1
+minAvailable: 1
+
+image:
+  repository: bossanova-cloud-container.jfrog.io/cloud-apps/sas-token-service
+  tag: sas-token-placeholder
+  pullPolicy: Always
+
+# used by common.fullname template
+fullnameOverride: sas-token
+
+imagePullSecrets:
+  - dpr-secret
+
+serviceAccountName: sas-token
+
+javaOptions: "-Xms256m -Xmx512m"
+
+thriftPort: 8445
+
+health:
+  path: /health
+  port: 9000
+
+resources:
+  limits:
+    cpu: 1 # Doesn't really need this much CPU, except at startup
+    memory: 768Mi
+  requests:
+    cpu: 100m
+    memory: 384Mi
+
+envconsul:
+  configFile: envconsul-config.hcl
+  secrets:
+    - path: infrastructure-services/sas-token
+  prefixes:
+    - infrastructure-services/sas-token
+
+consulTemplate:
+  configFile: consul-template.hcl
+  templateFile: key.ctmpl
+
+vault:
+  caMountPath: sas-token-placeholder
+  caSecretName: sas-token-placeholder
+  caBundleFilename: sas-token-placeholder
+  enabled: True
+  addr: https://10.0.0.0:8200 # must be overridden at deployment time
+  auth:
+    requestsCaBundle: sas-token-placeholder
+    role: sas-token
+    debug: true
+
+consul:
+  caSecretName: sas-token-placeholder
+  caMountPath: sas-token-placeholder
+  caBundleFilename: sas-token-placeholder
+  enabled: True
+  addr: https://10.0.0.0:8500 # must be overridden at deployment time
+
+prometheus:
+  enabled: false # TODO
+  scrape: true
+  probe: true
+  port: 9397
+  path: /metrics
+
+probes:
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+keystores:
+  keystore:
+    pemFile: sas-token.key.pem
+    pkcs12File: sas-token.p12
+  truststore:
+    pemMount:
+      path: /var/run/secrets/bossanova.cloud/truststore
+      secretName: sas-token-placeholder
+    pemFile: sas-token-placeholder
+    pkcs12File: azure-device-robot-ca.p12
+  script: keystores.sh
+  passwordSecret:
+    key: storePassword
+  mount:
+    name: keystores
+    path: /var/run/secrets/bossanova.cloud/keystores
+
+configPath: /etc/config
+logbackFile: logback.xml

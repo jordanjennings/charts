@@ -1,0 +1,7 @@
+dependencies:
+  - name: vault-init-container
+    version: 0.1.2
+    repository: https://bossanova.jfrog.io/bossanova/charts
+  - name: common
+    version: 0.0.4
+    repository: "https://kubernetes-charts-incubator.storage.googleapis.com/"

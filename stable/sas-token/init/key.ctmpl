@@ -1,0 +1,5 @@
+{{- with secret "sas-token/pki/issue/sas-token" "common_name=sas-token-server" -}}
+{{ .Data.private_key }}
+{{ .Data.certificate }}
+{{ .Data.issuing_ca }}
+{{- end }}

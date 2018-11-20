@@ -1,0 +1,71 @@
+{{- template "common.configmap" (list . "sas-token.configmap") -}}
+{{- define "sas-token.configmap" -}}
+data:
+  {{ .Values.envconsul.configFile }}: |-
+    pristine = {{ default false .Values.envconsul.pristine }}
+    sanitize = {{ default true .Values.envconsul.sanitize }}
+    upcase = {{ default true .Values.envconsul.upcase }}
+    {{- range $index, $secret := .Values.envconsul.secrets }}
+    secret {
+      path = {{ $secret.path | quote }}
+      no_prefix = {{ default "true" $secret.noPrefix }}
+      format = "{{ default "{{ key }}" $secret.format }}"
+    }
+    {{- end }}
+    {{- range $index, $prefix :=.Values.envconsul.prefixes }}
+    prefix {
+      path = {{ $prefix | quote }}
+    }
+    {{- end }}
+    vault {
+      ssl {
+        {{- if .Values.vault.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.vault.caMountPath .Values.vault.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+    consul {
+      ssl {
+        {{- if .Values.vault.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.consul.caMountPath .Values.consul.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+
+  {{ .Values.consulTemplate.configFile }}: |-
+    vault {
+      ssl {
+        {{- if .Values.vault.caSecretName }}
+        ca_cert = {{ (printf "%v/%v" .Values.vault.caMountPath .Values.vault.caBundleFilename) | quote }}
+        {{- end }}
+      }
+    }
+    template {
+      source = "{{ .Values.configPath }}/{{ .Values.consulTemplate.templateFile }}"
+      destination = "{{ .Values.keystores.mount.path }}/{{ .Values.keystores.keystore.pemFile }}"
+      error_on_missing_key = true
+    }
+
+  {{ .Values.consulTemplate.templateFile }}: |-
+{{ .Files.Get "init/key.ctmpl" | indent 4 }}
+
+  {{ .Values.keystores.script }}: |-
+{{ .Files.Get "init/keystores.sh" | indent 4 }}
+
+  {{ .Values.logbackFile }}: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration scan="true">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>%msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!--warning: hibernate validator logs sensitive config values if set more granular than info-->
+        <logger name="org.hibernate.validator" level="info" />
+
+        <root level="${logLevel:-info}">
+            <appender-ref ref="console" />
+        </root>
+    </configuration>
+{{- end }}
